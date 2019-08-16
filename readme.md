@@ -2,11 +2,16 @@
 
 ## Status
 
-Currently disassembles most x64_64 instructions
-Not yet implemented:
-[ ] - AVX
-[ ] - FPU
-[ ] - FMA3
+Currently disassembles most x64_64 instructions but needs a lot more testing. Can only read Windows PE executables at the moment.
+
+## Todo
+
+- [ ] AVX
+- [ ] FPU
+- [ ] FMA3
+- [ ] Add screenshot of HTML output
+- [ ] Add labels
+- [ ] Add imports
 
 ## Requirements
 - Dlang https://dlang.org/
