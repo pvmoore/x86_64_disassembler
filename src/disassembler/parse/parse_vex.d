@@ -86,11 +86,11 @@ void parseVex3Byte(Parser p, uint byte1) {
     todo();
 }
 void page1(Parser p, ref AVX avx) {
-
+    // page 524
 }
 void page2(Parser p, ref AVX avx) {
-
+    // page 527
 }
 void page3(Parser p, ref AVX avx) {
-
+    // page 529
 }

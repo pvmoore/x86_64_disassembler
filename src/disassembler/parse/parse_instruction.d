@@ -221,7 +221,7 @@ void twoByteOpcode(Parser p, uint byte1, uint byte2) {
                 group9(p);
             } else if(p.prefix.rep && loNibble==0x2) {
                 /* F3 */
-                p.instr.copy(Instruction("cmpss", ps_VssWssIb));
+                p.instr.copy(Instruction("cmpss", ps_VssWssIb, 0, IS.SSE));
             } else if(p.prefix.repne && loNibble==0x2) {
                 /* F2 */
                 p.instr.copy(Instruction("cmpsd", ps_VsdWsdIb));

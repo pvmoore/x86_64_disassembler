@@ -7,6 +7,8 @@ enum IS : uint {
     /* x86_64 Standard Instructions */
     STD = 0,
 
+    SSE,
+    SSE2,
     /* Instruction sets after x86_64/SSE2 */
     SSE3,       // (Prescott)
     SSSE3,      // (Sandy Bridge)

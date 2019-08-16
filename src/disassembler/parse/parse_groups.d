@@ -191,8 +191,8 @@ void group15(Parser p) {
         switch(modrm.reg) {
             case 0: p.instr.copy(Instruction("fxsave", ps_M)); break;
             case 1: p.instr.copy(Instruction("fxrstor", ps_M)); break;
-            case 2: p.instr.copy(Instruction("ldmxcsr", ps_Md)); break;
-            case 3: p.instr.copy(Instruction("stmxcsr", ps_Md)); break;
+            case 2: p.instr.copy(Instruction("ldmxcsr", ps_Md, 0, IS.SSE)); break;
+            case 3: p.instr.copy(Instruction("stmxcsr", ps_Md, 0, IS.SSE)); break;
             case 4:
                 if(modrm.mod!=0b11) p.instr.copy(Instruction("xsave", ps_M));
                 break;
@@ -205,7 +205,7 @@ void group15(Parser p) {
                 else                p.instr.copy(Instruction("xsaveopt", ps_M));
                 break;
             case 7:
-                if(modrm.mod==0b11) p.instr.copy(Instruction("sfence", ps_none));
+                if(modrm.mod==0b11) p.instr.copy(Instruction("sfence", ps_none, 0, IS.SSE));
                 else                p.instr.copy(Instruction("clflush", ps_Mb));
                 break;
             default: break;
@@ -215,10 +215,10 @@ void group15(Parser p) {
 void group16(Parser p) {
     auto modrm = ModRM(p.peekByte());
     switch(modrm.reg) {
-        case 0: p.instr.copy(Instruction("prefetchnta", ps_M)); break;
-        case 1: p.instr.copy(Instruction("prefetcht0", ps_M)); break;
-        case 2: p.instr.copy(Instruction("prefetcht1", ps_M)); break;
-        case 3: p.instr.copy(Instruction("prefetcht2", ps_M)); break;
+        case 0: p.instr.copy(Instruction("prefetchnta", ps_M, 0, IS.SSE)); break;
+        case 1: p.instr.copy(Instruction("prefetcht0", ps_M, 0, IS.SSE)); break;
+        case 2: p.instr.copy(Instruction("prefetcht1", ps_M, 0, IS.SSE)); break;
+        case 3: p.instr.copy(Instruction("prefetcht2", ps_M, 0, IS.SSE)); break;
         /* aliased to prefetch exclusive */
         case 4:
         case 5:
