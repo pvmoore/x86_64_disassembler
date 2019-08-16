@@ -28,12 +28,10 @@ struct Prefix {
 
 	bool hasVexBits;
 	uint vexBits;
-	//uint vexB() const { return (vexBits & 1); } 		// check these
-	//uint vexR() const { return (vexBits & 2) >> 1; }
+	bool vex2Byte() { return hasVexBits && vexBits==1; }
+	bool vex3Byte() { return hasVexBits && vexBits==0; }
 
 	bool hasXopBits;
-
-	
 
 	bool hasPrefix()  	  { return bytes.length>0; }
 	bool hasSegOverride() { return segreg != Reg.NONE; }

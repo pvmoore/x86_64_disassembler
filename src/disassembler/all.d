@@ -21,10 +21,14 @@ import disassembler.sib;
 
 import disassembler.emit.html.all;
 
+import disassembler.parse.parse_3byte_opcodes;
+import disassembler.parse.parse_fpu;
+import disassembler.parse.parse_groups;
 import disassembler.parse.parser;
 import disassembler.parse.parse_instruction;
 import disassembler.parse.parse_modrm_sib;
 import disassembler.parse.parse_prefix;
+import disassembler.parse.parse_vex;
 import disassembler.parse.strategy;
 import disassembler.util;
 
