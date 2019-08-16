@@ -1,0 +1,67 @@
+body {
+    font-family: verdana;
+    font-size: 16px;
+    background-color: #666;
+    color: #ddd;
+}
+div {
+    margin: 0px;
+    padding:0px;
+}
+span {
+    margin: 0px;
+    padding:0px;
+}
+#assembly {
+    display: grid;
+    margin: auto;
+    padding:5px;
+    width: 1400px;
+    height: 600px;
+    border: 1px solid #000;
+
+    background-color: #222;
+    color: #ddd;
+    font-family: "consolas";
+    font-size:20px;
+    line-height: 18px;
+
+    overflow-y: scroll;
+
+    grid-template-columns: 5fr 1fr 12fr 1fr;
+
+    grid-column-gap: 15px;
+}
+
+.bytes {
+    text-align: right;
+    color: #888;
+}
+.pb {
+    color: #999;
+}
+.npb {
+
+}
+.offset {
+    color: rgb(109, 167, 200);
+}
+.ops {
+    color:rgb(140, 155, 115);
+}
+.comments {
+    color: #ddd;
+}
+
+.label {
+    color: aquamarine;
+}
+.reg {
+    color: burlywood;
+}
+.imm {
+    color: #ddd;
+}
+.disp {
+    color: #ddd;
+}

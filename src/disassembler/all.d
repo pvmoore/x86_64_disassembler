@@ -1,0 +1,44 @@
+module disassembler.all;
+
+public:
+
+import std.stdio    			: writefln, File;
+import std.format   			: format;
+import std.array 				: appender, replace;
+import std.algorithm.iteration  : map;
+
+import common;
+import logging;
+import resources;
+
+import disassembler;
+
+import disassembler.enums;
+import disassembler.modrm;
+import disassembler.prefix;
+import disassembler.operand;
+import disassembler.sib;
+
+import disassembler.emit.html.all;
+
+import disassembler.parse.parser;
+import disassembler.parse.parse_instruction;
+import disassembler.parse.parse_modrm_sib;
+import disassembler.parse.parse_prefix;
+import disassembler.parse.strategy;
+import disassembler.util;
+
+import disassembler.instructions.instruction;
+import disassembler.instructions.onebyte;
+import disassembler.instructions.twobytes;
+import disassembler.instructions.threebytes;
+
+enum chatty = true;
+
+void chat(A...)(lazy string fmt, lazy A args) {
+	static if(chatty) {
+	    log(fmt, args);
+		writefln(fmt, args);
+	    flushLog();
+	}
+}

@@ -1,0 +1,17 @@
+
+out/
+bin/
+.out/
+.bin/
+.idea/
+*.iml
+.vscode/
+
+.dub/
+.logs/
+
+*.exe
+*.lib
+
+
+out.html

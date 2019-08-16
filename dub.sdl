@@ -1,0 +1,33 @@
+
+name "disassembler"
+platforms "windows"
+
+buildType "debug" {
+	buildOptions "debugMode" "debugInfo" "alwaysStackFrame" "stackStomping" "warningsAsErrors"
+}
+buildType "release" {
+	buildOptions "releaseMode" "optimize" "inline" "noBoundsCheck"
+}
+buildType "unittest" {
+	buildOptions "debugMode" "debugInfo" "alwaysStackFrame" "stackStomping" "warningsAsErrors" "unittests"
+}
+
+configuration "test" {
+	mainSourceFile "src/test.d"
+	targetType "executable"
+	targetName "bin-test"
+	excludedSourceFiles "src/unittests.d"
+}
+configuration "unittests" {
+	targetType "executable"
+	targetName "bin-unittests"
+	excludedSourceFiles "src/test.d"
+}
+configuration "library" {
+	targetType "library"
+	excludedSourceFiles "src/test.d" "src/unittests.d"  "src/test-suite.d"
+}
+
+dependency "common" version="~master"
+dependency "logging" version="~master"
+dependency "resources" version="~master"
