@@ -24,11 +24,11 @@ span {
     color: #ddd;
     font-family: "consolas";
     font-size:20px;
-    line-height: 18px;
+    line-height: 19px;
 
     overflow-y: scroll;
 
-    grid-template-columns: 5fr 1fr 12fr 1fr;
+    grid-template-columns: 5fr 1fr 6fr 6fr;
 
     grid-column-gap: 15px;
 }
@@ -38,7 +38,7 @@ span {
     color: #888;
 }
 .pb {
-    color: #999;
+
 }
 .npb {
 
@@ -49,8 +49,8 @@ span {
 .ops {
     color:rgb(140, 155, 115);
 }
-.comments {
-    color: #ddd;
+.comment {
+    color: #777;
 }
 
 .label {

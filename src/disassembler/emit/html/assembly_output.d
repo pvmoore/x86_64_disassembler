@@ -18,7 +18,10 @@ public:
 
             // prefix bytes
             string prefixBytes = formatHexBytes(i.prefix.bytes, "");
-            buf ~= "<span class='pb'>%s%s </span>".format(prefixBytes, i.hasPrefix() ? ",":"");
+            if(i.hasPrefix()) {
+                prefixBytes = "[" ~ prefixBytes ~ "] ";
+            }
+            buf ~= "<span class='pb'>%s</span>".format(prefixBytes);
 
             // non-prefix bytes
             string nonPrefixBytes = formatHexBytes(i.bytes[i.prefix.bytes.length..$], "");
@@ -34,8 +37,8 @@ public:
             buf ~= "<div class='ops'>%s %s</div>".format(i.getMnemonicString(), i.getOperandsString(Operand.Fmt.HTML));
 
             // comments
-            string comments = "";
-            buf ~= "<span class='comments'>%s</span>".format(comments);
+            string comments = i.getComments();
+            buf ~= "<span class='comment'>%s</span>".format(comments);
 
 
         }

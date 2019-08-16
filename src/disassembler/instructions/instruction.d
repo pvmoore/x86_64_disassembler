@@ -113,12 +113,23 @@ public:
         auto os = getOperandsString(fmt);
         return os.length > 0 ? ms ~ " " ~ os : ms;
     }
+    string getComments() {
+        string comment;
+        if(hasPrefix()) {
+            comment ~= "; %s".format(prefix.toString());
+        }
+        if(instructionSet!=IS.STD) {
+            if(comment.length==0) comment ~= "; "; else comment ~= " ";
+            comment ~= "%s".format(instructionSet);
+        }
+        return comment;
+    }
     string toString() {
         string pb  = formatHexBytes(prefix.bytes, "");
         string ib  = formatHexBytes(bytes[prefix.bytes.length..$], "");
         string pad;
         string pre;
-        string suffix;
+        string suffix = getComments();
 
         if(pb.length>0) {
             pad = ("%% %ss".format(45 - bytes.length*3)).format("");
@@ -126,14 +137,6 @@ public:
         } else {
             pad = ("%% %ss".format(47 - bytes.length*3)).format("");
             pre = pad ~ "%s".format(ib);
-        }
-
-        if(pb.length>0) {
-            suffix ~= "; %s".format(prefix.toString());
-        }
-        if(instructionSet!=IS.STD) {
-            if(suffix.length==0) suffix ~= "; "; else suffix ~= " ";
-            suffix ~= "%s".format(instructionSet);
         }
 
         string offsetStr = " | %04x%s".format(offset, (offset&15)==0 ? "=" : " ");
