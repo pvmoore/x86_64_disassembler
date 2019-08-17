@@ -146,11 +146,11 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
                 p.instr.copy(Instruction("cmpss", ps_VssWssIb, 0, IS.SSE));
             } else if(p.prefix.repne && loNibble==0x2) {
                 /* F2 */
-                p.instr.copy(Instruction("cmpsd", ps_VsdWsdIb));
+                p.instr.copy(Instruction("cmpsd", ps_VsdWsdIb, 0, IS.SSE2));
             } else if(p.prefix.opSize && loNibble.isOneOf(2,4,5,6)) {
                 /* 66 */
                 switch(loNibble) {
-                    case 2: p.instr.copy(Instruction("cmppd", ps_VpdWpdIb)); break;
+                    case 2: p.instr.copy(Instruction("cmppd", ps_VpdWpdIb, 0, IS.SSE2)); break;
                     case 4: p.instr.copy(Instruction("pinsrw", ps_VoEwIb)); break;
                     case 5: p.instr.copy(Instruction("pextrw", ps_GdUoIb)); break;
                     case 6: p.instr.copy(Instruction("shufpd", ps_VpdWpdIb)); break;
@@ -164,7 +164,7 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
         case 0xD:
             if(p.prefix.rep) {
                 /* F3 */
-                if(loNibble==0x6) p.instr.copy(Instruction("movq2dq", ps_VoNq));
+                if(loNibble==0x6) p.instr.copy(Instruction("movq2dq", ps_VoNq, 0, IS.SSE2));
             } else if(p.prefix.repne) {
                 /* F2 */
                 if(loNibble==0x0) p.instr.copy(Instruction("addsubps", ps_VpsWps, 0, IS.SSE3));
@@ -179,10 +179,10 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
         case 0xE:
             if(p.prefix.rep) {
                 /* F3 */
-                if(loNibble==0x6) p.instr.copy(Instruction("cvtdq2pd", ps_VpdWpj));
+                if(loNibble==0x6) p.instr.copy(Instruction("cvtdq2pd", ps_VpdWpj, 0, IS.SSE2));
             } else if(p.prefix.repne) {
                 /* F2 */
-                if(loNibble==0x6) p.instr.copy(Instruction("cvtpd2dq", ps_VpjWpd));
+                if(loNibble==0x6) p.instr.copy(Instruction("cvtpd2dq", ps_VpjWpd, 0, IS.SSE2));
             } else if(p.prefix.opSize) {
                 /* 66 */
                 p.instr.copy(INSTRUCTIONS_row_E_66[loNibble]);
@@ -262,26 +262,26 @@ __gshared Instruction[] INSTRUCTIONS_row_1_F3 = [
     Instruction("", null),                          /* lo=F - invalid */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_1_66 = [
-    Instruction("movupd", ps_VpdWpd),   /* lo=0 */
-    Instruction("movupd", ps_WpdVpd),   /* lo=1 */
-    Instruction("movlpd", ps_VoqMq),    /* lo=2 */
-    Instruction("movlpd", ps_MqVoq),    /* lo=3 */
-    Instruction("unpcklpd", ps_VoqWoq), /* lo=4 */
-    Instruction("unpckhpd", ps_VoqWoq), /* lo=5 */
-    Instruction("movhpd", ps_VoqMq),    /* lo=6 */
-    Instruction("movhpd", ps_MqVoq),    /* lo=7 */
-    Instruction("", null),              /* lo=8 - invalid */
-    Instruction("", null),              /* lo=9 - invalid */
-    Instruction("", null),              /* lo=A - invalid */
-    Instruction("", null),              /* lo=B - invalid */
-    Instruction("", null),              /* lo=C - invalid */
-    Instruction("", null),              /* lo=D - invalid */
-    Instruction("", null),              /* lo=E - invalid */
-    Instruction("", null),              /* lo=F - invalid */
+    Instruction("movupd", ps_VpdWpd, 0, IS.SSE2),   /* lo=0 */
+    Instruction("movupd", ps_WpdVpd, 0, IS.SSE2),   /* lo=1 */
+    Instruction("movlpd", ps_VoqMq, 0, IS.SSE2),    /* lo=2 */
+    Instruction("movlpd", ps_MqVoq, 0, IS.SSE2),    /* lo=3 */
+    Instruction("unpcklpd", ps_VoqWoq, 0, IS.SSE2), /* lo=4 */
+    Instruction("unpckhpd", ps_VoqWoq, 0, IS.SSE2), /* lo=5 */
+    Instruction("movhpd", ps_VoqMq, 0, IS.SSE2),    /* lo=6 */
+    Instruction("movhpd", ps_MqVoq, 0, IS.SSE2),    /* lo=7 */
+    Instruction("", null),                          /* lo=8 - invalid */
+    Instruction("", null),                          /* lo=9 - invalid */
+    Instruction("", null),                          /* lo=A - invalid */
+    Instruction("", null),                          /* lo=B - invalid */
+    Instruction("", null),                          /* lo=C - invalid */
+    Instruction("", null),                          /* lo=D - invalid */
+    Instruction("", null),                          /* lo=E - invalid */
+    Instruction("", null),                          /* lo=F - invalid */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_1_F2 = [
-    Instruction("movsd", ps_VsdWsd),                    /* lo=0 */
-    Instruction("movsd", ps_WsdVsd),                    /* lo=1 */
+    Instruction("movsd", ps_VsdWsd, 0, IS.SSE2),        /* lo=0 */
+    Instruction("movsd", ps_WsdVsd, 0, IS.SSE2),        /* lo=1 */
     Instruction("movddup", ps_VoWsd, 0, IS.SSE3),       /* lo=2 */
     Instruction("", null),                              /* lo=3 - invalid */
     Instruction("", null),                              /* lo=4 - invalid */
@@ -317,40 +317,40 @@ __gshared Instruction[] INSTRUCTIONS_row_2 = [
     Instruction("comiss", ps_VssWss, 0, IS.SSE),    /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_2_66 = [
-    Instruction("", null),              /* lo=0 - invalid */
-    Instruction("", null),              /* lo=1 - invalid */
-    Instruction("", null),              /* lo=2 - invalid */
-    Instruction("", null),              /* lo=3 - invalid */
-    Instruction("", null),              /* lo=4 - invalid */
-    Instruction("", null),              /* lo=5 - invalid */
-    Instruction("", null),              /* lo=6 - invalid */
-    Instruction("", null),              /* lo=7 - invalid */
-    Instruction("movapd", ps_VpdWpd),   /* lo=8 */
-    Instruction("movapd", ps_WpdVpd),   /* lo=9 */
-    Instruction("cvtpi2pd", ps_VpdQpj), /* lo=A */
-    Instruction("movntpd", ps_MoVpd),   /* lo=B */
-    Instruction("cvttpd2pi", ps_PpjWpd),/* lo=C */
-    Instruction("cvtpd2pi", ps_PpjWpd), /* lo=D */
-    Instruction("ucomisd", ps_VsdWsd),  /* lo=E */
-    Instruction("comisd", ps_VsdWsd),   /* lo=F */
+    Instruction("", null),                          /* lo=0 - invalid */
+    Instruction("", null),                          /* lo=1 - invalid */
+    Instruction("", null),                          /* lo=2 - invalid */
+    Instruction("", null),                          /* lo=3 - invalid */
+    Instruction("", null),                          /* lo=4 - invalid */
+    Instruction("", null),                          /* lo=5 - invalid */
+    Instruction("", null),                          /* lo=6 - invalid */
+    Instruction("", null),                          /* lo=7 - invalid */
+    Instruction("movapd", ps_VpdWpd, 0, IS.SSE2),   /* lo=8 */
+    Instruction("movapd", ps_WpdVpd, 0, IS.SSE2),   /* lo=9 */
+    Instruction("cvtpi2pd", ps_VpdQpj, 0, IS.SSE2), /* lo=A */
+    Instruction("movntpd", ps_MoVpd, 0, IS.SSE2),   /* lo=B */
+    Instruction("cvttpd2pi", ps_PpjWpd, 0, IS.SSE2),/* lo=C */
+    Instruction("cvtpd2pi", ps_PpjWpd, 0, IS.SSE2), /* lo=D */
+    Instruction("ucomisd", ps_VsdWsd, 0, IS.SSE2),  /* lo=E */
+    Instruction("comisd", ps_VsdWsd, 0, IS.SSE2),   /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_2_F2 = [
-    Instruction("", null),              /* lo=0 - invalid */
-    Instruction("", null),              /* lo=1 - invalid */
-    Instruction("", null),              /* lo=2 - invalid */
-    Instruction("", null),              /* lo=3 - invalid */
-    Instruction("", null),              /* lo=4 - invalid */
-    Instruction("", null),              /* lo=5 - invalid */
-    Instruction("", null),              /* lo=6 - invalid */
-    Instruction("", null),              /* lo=7 - invalid */
-    Instruction("", null),              /* lo=8 - invalid */
-    Instruction("", null),              /* lo=9 - invalid */
-    Instruction("cvtsi2sd", ps_VsdEy),  /* lo=A */
-    Instruction("movntsd", ps_MqVsd),   /* lo=B */
-    Instruction("cvttsd2si", ps_GyWsd), /* lo=C */
-    Instruction("cvtsd2si", ps_GyWsd),  /* lo=D */
-    Instruction("", null),              /* lo=E - invalid **/
-    Instruction("", null),              /* lo=F - invalid **/
+    Instruction("", null),                          /* lo=0 - invalid */
+    Instruction("", null),                          /* lo=1 - invalid */
+    Instruction("", null),                          /* lo=2 - invalid */
+    Instruction("", null),                          /* lo=3 - invalid */
+    Instruction("", null),                          /* lo=4 - invalid */
+    Instruction("", null),                          /* lo=5 - invalid */
+    Instruction("", null),                          /* lo=6 - invalid */
+    Instruction("", null),                          /* lo=7 - invalid */
+    Instruction("", null),                          /* lo=8 - invalid */
+    Instruction("", null),                          /* lo=9 - invalid */
+    Instruction("cvtsi2sd", ps_VsdEy, 0, IS.SSE2),  /* lo=A */
+    Instruction("movntsd", ps_MqVsd),               /* lo=B */
+    Instruction("cvttsd2si", ps_GyWsd, 0, IS.SSE2), /* lo=C */
+    Instruction("cvtsd2si", ps_GyWsd, 0, IS.SSE2),  /* lo=D */
+    Instruction("", null),                          /* lo=E - invalid **/
+    Instruction("", null),                          /* lo=F - invalid **/
 ];
 __gshared Instruction[] INSTRUCTIONS_row_2_F3 = [
     Instruction("", null),                          /* lo=0 - invalid */
@@ -420,48 +420,48 @@ __gshared Instruction[] INSTRUCTIONS_row_5 = [
     Instruction("xorps", ps_VpsWps, 0, IS.SSE),     /* lo=7 */
     Instruction("addps", ps_VpsWps, 0, IS.SSE),     /* lo=8 */
     Instruction("mulps", ps_VpsWps, 0, IS.SSE),     /* lo=9 */
-    Instruction("cvtps2pd", ps_VpsWps),             /* lo=A */
-    Instruction("cvtdq2ps", ps_VpsWps),             /* lo=B */
+    Instruction("cvtps2pd", ps_VpsWps, 0, IS.SSE2), /* lo=A */
+    Instruction("cvtdq2ps", ps_VpsWps, 0, IS.SSE2), /* lo=B */
     Instruction("subps", ps_VpsWps, 0, IS.SSE),     /* lo=C */
     Instruction("minps", ps_VpsWps, 0, IS.SSE),     /* lo=D */
     Instruction("divps", ps_VpsWps, 0, IS.SSE),     /* lo=E */
     Instruction("maxps", ps_VpsWps),                /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_5_66 = [
-    Instruction("movmskpd", ps_GdUpd),  /* lo=0 */
-    Instruction("sqrtpd", ps_VpdWpd),   /* lo=1 */
-    Instruction("", null),              /* lo=2 - invalid */
-    Instruction("", null),              /* lo=3 - invalid */
-    Instruction("andpd", ps_VpdWpd),    /* lo=4 */
-    Instruction("andnpd", ps_VpdWpd),   /* lo=5 */
-    Instruction("orpd", ps_VpdWpd),     /* lo=6 */
-    Instruction("xorpd", ps_VpdWpd),    /* lo=7 */
-    Instruction("addpd", ps_VpdWpd),    /* lo=8 */
-    Instruction("mulpd", ps_VpdWpd),    /* lo=9 */
-    Instruction("cvtpd2ps", ps_VpdWpd), /* lo=A */
-    Instruction("cvtps2dq", ps_VoWps),  /* lo=B - invalid */
-    Instruction("subpd", ps_VpdWpd),    /* lo=C */
-    Instruction("minpd", ps_VpdWpd),    /* lo=D */
-    Instruction("divpd", ps_VpdWpd),    /* lo=E */
-    Instruction("maxpd", ps_VpdWpd),    /* lo=F */
+    Instruction("movmskpd", ps_GdUpd),              /* lo=0 */
+    Instruction("sqrtpd", ps_VpdWpd, 0, IS.SSE2),   /* lo=1 */
+    Instruction("", null),                          /* lo=2 - invalid */
+    Instruction("", null),                          /* lo=3 - invalid */
+    Instruction("andpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=4 */
+    Instruction("andnpd", ps_VpdWpd, 0, IS.SSE2),   /* lo=5 */
+    Instruction("orpd", ps_VpdWpd, 0, IS.SSE2),     /* lo=6 */
+    Instruction("xorpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=7 */
+    Instruction("addpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=8 */
+    Instruction("mulpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=9 */
+    Instruction("cvtpd2ps", ps_VpdWpd, 0, IS.SSE2), /* lo=A */
+    Instruction("cvtps2dq", ps_VoWps, 0, IS.SSE2),  /* lo=B - invalid */
+    Instruction("subpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=C */
+    Instruction("minpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=D */
+    Instruction("divpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=E */
+    Instruction("maxpd", ps_VpdWpd, 0, IS.SSE2),    /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_5_F2 = [
-    Instruction("", null),              /* lo=0 - invalid */
-    Instruction("sqrtsd", ps_VsdWsd),   /* lo=1 */
-    Instruction("", null),              /* lo=2 - invalid */
-    Instruction("", null),              /* lo=3 - invalid */
-    Instruction("", null),              /* lo=4 - invalid */
-    Instruction("", null),              /* lo=5 - invalid */
-    Instruction("", null),              /* lo=6 - invalid */
-    Instruction("", null),              /* lo=7 - invalid */
-    Instruction("addsd", ps_VsdWsd),    /* lo=8 */
-    Instruction("mulsd", ps_VsdWsd),    /* lo=9 */
-    Instruction("cvtsd2ss", ps_VsdWsd), /* lo=A */
-    Instruction("", null),              /* lo=B - invalid */
-    Instruction("subsd", ps_VsdWsd),    /* lo=C */
-    Instruction("minsd", ps_VsdWsd),    /* lo=D */
-    Instruction("divsd", ps_VsdWsd),    /* lo=E */
-    Instruction("maxsd", ps_VsdWsd),    /* lo=F */
+    Instruction("", null),                          /* lo=0 - invalid */
+    Instruction("sqrtsd", ps_VsdWsd, 0, IS.SSE2),   /* lo=1 */
+    Instruction("", null),                          /* lo=2 - invalid */
+    Instruction("", null),                          /* lo=3 - invalid */
+    Instruction("", null),                          /* lo=4 - invalid */
+    Instruction("", null),                          /* lo=5 - invalid */
+    Instruction("", null),                          /* lo=6 - invalid */
+    Instruction("", null),                          /* lo=7 - invalid */
+    Instruction("addsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=8 */
+    Instruction("mulsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=9 */
+    Instruction("cvtsd2ss", ps_VsdWsd, 0, IS.SSE2), /* lo=A */
+    Instruction("", null),                          /* lo=B - invalid */
+    Instruction("subsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=C */
+    Instruction("minsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=D */
+    Instruction("divsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=E */
+    Instruction("maxsd", ps_VsdWsd, 0, IS.SSE2),    /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_5_F3 = [
     Instruction("", null),                          /* lo=0 - invalid */
@@ -474,7 +474,7 @@ __gshared Instruction[] INSTRUCTIONS_row_5_F3 = [
     Instruction("", null),                          /* lo=7 - invalid */
     Instruction("addss", ps_VssWss, 0, IS.SSE),     /* lo=8 */
     Instruction("mulss", ps_VssWss, 0, IS.SSE),     /* lo=9 */
-    Instruction("cvtss2sd", ps_VssWss),             /* lo=A */
+    Instruction("cvtss2sd", ps_VssWss, 0, IS.SSE2), /* lo=A */
     Instruction("cvtps2dq", ps_VoWps),              /* lo=B */
     Instruction("subss", ps_VssWss, 0, IS.SSE),     /* lo=C */
     Instruction("minss", ps_VssWss, 0, IS.SSE),     /* lo=D */
@@ -483,68 +483,68 @@ __gshared Instruction[] INSTRUCTIONS_row_5_F3 = [
 ];
 /* row 6 */
 __gshared Instruction[] INSTRUCTIONS_row_6 = [
-    Instruction("punpcklbw", ps_PqQd),   /* lo=0 */
-    Instruction("punpcklwd", ps_PqQd),   /* lo=1 */
-    Instruction("punpckldq", ps_PqQd),   /* lo=2 */
-    Instruction("packsswb", ps_PpiQpi),  /* lo=3 */
-    Instruction("pcmpgtb", ps_PpkQpk),   /* lo=4 */
-    Instruction("pcmpgtw", ps_PpiQpi),   /* lo=5 */
-    Instruction("pcmpgtd", ps_PpjQpj),   /* lo=6 */
-    Instruction("packuswb", ps_PpiQpi),  /* lo=7 */
-    Instruction("punpckhbw", ps_PqDq),   /* lo=8 */
-    Instruction("punpckhwd", ps_PqDq),   /* lo=9 */
-    Instruction("punpckhdq", ps_PqDq),   /* lo=A */
-    Instruction("packssdw", ps_PqDq),    /* lo=B */
-    Instruction("", null),               /* lo=C - invalid */
-    Instruction("", null),               /* lo=D - invalid */
-    Instruction("movd", ps_PyEy),        /* lo=E */
-    Instruction("movq", ps_PqQq),        /* lo=F */
+    Instruction("punpcklbw", ps_PqQd, 0, IS.MMX),   /* lo=0 */
+    Instruction("punpcklwd", ps_PqQd, 0, IS.MMX),   /* lo=1 */
+    Instruction("punpckldq", ps_PqQd, 0, IS.MMX),   /* lo=2 */
+    Instruction("packsswb", ps_PpiQpi, 0, IS.MMX),  /* lo=3 */
+    Instruction("pcmpgtb", ps_PpkQpk, 0, IS.MMX),   /* lo=4 */
+    Instruction("pcmpgtw", ps_PpiQpi, 0, IS.MMX),   /* lo=5 */
+    Instruction("pcmpgtd", ps_PpjQpj, 0, IS.MMX),   /* lo=6 */
+    Instruction("packuswb", ps_PpiQpi, 0, IS.MMX),  /* lo=7 */
+    Instruction("punpckhbw", ps_PqDq, 0, IS.MMX),   /* lo=8 */
+    Instruction("punpckhwd", ps_PqDq, 0, IS.MMX),   /* lo=9 */
+    Instruction("punpckhdq", ps_PqDq, 0, IS.MMX),   /* lo=A */
+    Instruction("packssdw", ps_PqDq, 0, IS.MMX),    /* lo=B */
+    Instruction("", null),                          /* lo=C - invalid */
+    Instruction("", null),                          /* lo=D - invalid */
+    Instruction("movd", ps_PyEy, 0, IS.MMX),        /* lo=E */
+    Instruction("movq", ps_PqQq, 0, IS.MMX),        /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_6_66 = [
-    Instruction("punpcklbw", ps_VoqWoq), /* lo=0 */
-    Instruction("punpcklwd", ps_VoqWoq), /* lo=1 */
-    Instruction("punpckldq", ps_VoqWoq), /* lo=2 */
-    Instruction("packsswb", ps_VpiWpi),  /* lo=3 */
-    Instruction("pcmpgtb", ps_VpkWpk),   /* lo=4 */
-    Instruction("pcmpgtw", ps_VpiWpi),   /* lo=5 */
-    Instruction("pcmpgtd", ps_VpjWpj),   /* lo=6 */
-    Instruction("packuswb", ps_VpiWpi),  /* lo=7 */
-    Instruction("punpckhbw", ps_VoWq),   /* lo=8 */
-    Instruction("punpckhwd", ps_VoWq),   /* lo=9 */
-    Instruction("punpckhdq", ps_VoWq),   /* lo=A */
-    Instruction("packssdw", ps_VoWo),    /* lo=B */
-    Instruction("punpcklqdq", ps_VoWq),  /* lo=C */
-    Instruction("punpckhqdq", ps_VoWq),  /* lo=D */
-    Instruction("movd", ps_VyEy),        /* lo=E */
-    Instruction("movdqa", ps_VoWo),      /* lo=F */
+    Instruction("punpcklbw", ps_VoqWoq, 0, IS.SSE2),/* lo=0 */
+    Instruction("punpcklwd", ps_VoqWoq, 0, IS.SSE2),/* lo=1 */
+    Instruction("punpckldq", ps_VoqWoq, 0, IS.SSE2),/* lo=2 */
+    Instruction("packsswb", ps_VpiWpi, 0, IS.SSE2), /* lo=3 */
+    Instruction("pcmpgtb", ps_VpkWpk, 0, IS.SSE2),  /* lo=4 */
+    Instruction("pcmpgtw", ps_VpiWpi, 0, IS.SSE2),  /* lo=5 */
+    Instruction("pcmpgtd", ps_VpjWpj, 0, IS.SSE2),  /* lo=6 */
+    Instruction("packuswb", ps_VpiWpi, 0, IS.SSE2), /* lo=7 */
+    Instruction("punpckhbw", ps_VoWq, 0, IS.SSE2),  /* lo=8 */
+    Instruction("punpckhwd", ps_VoWq, 0, IS.SSE2),  /* lo=9 */
+    Instruction("punpckhdq", ps_VoWq, 0, IS.SSE2),  /* lo=A */
+    Instruction("packssdw", ps_VoWo, 0, IS.SSE2),   /* lo=B */
+    Instruction("punpcklqdq", ps_VoWq, 0, IS.SSE2), /* lo=C */
+    Instruction("punpckhqdq", ps_VoWq, 0, IS.SSE2), /* lo=D */
+    Instruction("movd", ps_VyEy, 0, IS.SSE2),       /* lo=E */
+    Instruction("movdqa", ps_VoWo, 0, IS.SSE2),     /* lo=F */
 ];
 /* row 7 */
 __gshared Instruction[] INSTRUCTIONS_row_7 = [
-    Instruction("pshufw", ps_PqQqIb, 0, IS.SSE),    /* lo=0 */
+    Instruction("pshufw", ps_PqQqIb, 0, IS.MMX),    /* lo=0 */
     Instruction("", null),                          /* lo=1 - group 12 */
     Instruction("", null),                          /* lo=2 - group 13 */
     Instruction("", null),                          /* lo=3 - group 14 */
-    Instruction("pcmpeqb", ps_PpkQpk),              /* lo=4 */
-    Instruction("pcmpeqw", ps_PpiQpi),              /* lo=5 */
-    Instruction("pcmpeqd", ps_PpjQpj),              /* lo=6 */
-    Instruction("emms",  ps_none),                  /* lo=7 */
+    Instruction("pcmpeqb", ps_PpkQpk, 0, IS.MMX),   /* lo=4 */
+    Instruction("pcmpeqw", ps_PpiQpi, 0, IS.MMX),   /* lo=5 */
+    Instruction("pcmpeqd", ps_PpjQpj, 0, IS.MMX),   /* lo=6 */
+    Instruction("emms",  ps_none, 0, IS.MMX),       /* lo=7 */
     Instruction("", null),                          /* lo=8 - invalid */
     Instruction("", null),                          /* lo=9 - invalid */
     Instruction("", null),                          /* lo=A - invalid */
     Instruction("", null),                          /* lo=B - invalid */
     Instruction("", null),                          /* lo=C - invalid */
     Instruction("", null),                          /* lo=D - invalid */
-    Instruction("movd", ps_EyPy),                   /* lo=E */
-    Instruction("movq", ps_QqPq),                   /* lo=F */
+    Instruction("movd", ps_EyPy, 0, IS.MMX),        /* lo=E */
+    Instruction("movq", ps_QqPq, 0, IS.MMX),        /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_7_66 = [
-    Instruction("pshufd", ps_VoWoIb),               /* lo=0 */
+    Instruction("pshufd", ps_VoWoIb, 0, IS.SSE2),   /* lo=0 */
     Instruction("", null),                          /* lo=1 - group 12 */
     Instruction("", null),                          /* lo=2 - group 13 */
     Instruction("", null),                          /* lo=3 - group 14 */
-    Instruction("pcmpeqb", ps_VpkWpk),              /* lo=4 */
-    Instruction("pcmpeqw", ps_VpiWpi),              /* lo=5 */
-    Instruction("pcmpeqd", ps_VpjWpj),              /* lo=6 */
+    Instruction("pcmpeqb", ps_VpkWpk, 0, IS.SSE2),  /* lo=4 */
+    Instruction("pcmpeqw", ps_VpiWpi, 0, IS.SSE2),  /* lo=5 */
+    Instruction("pcmpeqd", ps_VpjWpj, 0, IS.SSE2),  /* lo=6 */
     Instruction("", null),                          /* lo=7 - invalid */
     Instruction("", null),                          /* lo=8 - group 17 */
     Instruction("extrq", ps_VoqUo),                 /* lo=9 */
@@ -556,7 +556,7 @@ __gshared Instruction[] INSTRUCTIONS_row_7_66 = [
     Instruction("movdqa", ps_WoVo),                 /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_7_F2 = [
-    Instruction("pshuflw", ps_VqWqIb),                  /* lo=0 */
+    Instruction("pshuflw", ps_VqWqIb, 0, IS.SSE2),      /* lo=0 */
     Instruction("", null),                              /* lo=1 - group 12 */
     Instruction("", null),                              /* lo=2 - group 13 */
     Instruction("", null),                              /* lo=3 - group 14 */
@@ -574,22 +574,22 @@ __gshared Instruction[] INSTRUCTIONS_row_7_F2 = [
     Instruction("", null),                              /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_7_F3 = [
-    Instruction("pshufhw", ps_VqWqIb),  /* lo=0 */
-    Instruction("", null),              /* lo=1 - group 12 */
-    Instruction("", null),              /* lo=2 - group 13 */
-    Instruction("", null),              /* lo=3 - group 14 */
-    Instruction("", null),              /* lo=4 - invalid */
-    Instruction("", null),              /* lo=5 - invalid */
-    Instruction("", null),              /* lo=6 - invalid */
-    Instruction("", null),              /* lo=7 - invalid */
-    Instruction("", null),              /* lo=8 - invalid */
-    Instruction("", null),              /* lo=9 - invalid */
-    Instruction("", null),              /* lo=A - invalid */
-    Instruction("", null),              /* lo=B - invalid */
-    Instruction("", null),              /* lo=C */
-    Instruction("", null),              /* lo=D */
-    Instruction("movq", ps_VqWq),       /* lo=E */
-    Instruction("movdqu", ps_WoVo),     /* lo=F */
+    Instruction("pshufhw", ps_VqWqIb, 0, IS.SSE2),  /* lo=0 */
+    Instruction("", null),                          /* lo=1 - group 12 */
+    Instruction("", null),                          /* lo=2 - group 13 */
+    Instruction("", null),                          /* lo=3 - group 14 */
+    Instruction("", null),                          /* lo=4 - invalid */
+    Instruction("", null),                          /* lo=5 - invalid */
+    Instruction("", null),                          /* lo=6 - invalid */
+    Instruction("", null),                          /* lo=7 - invalid */
+    Instruction("", null),                          /* lo=8 - invalid */
+    Instruction("", null),                          /* lo=9 - invalid */
+    Instruction("", null),                          /* lo=A - invalid */
+    Instruction("", null),                          /* lo=B - invalid */
+    Instruction("", null),                          /* lo=C */
+    Instruction("", null),                          /* lo=D */
+    Instruction("movq", ps_VqWq),                   /* lo=E */
+    Instruction("movdqu", ps_WoVo),                 /* lo=F */
 ];
 /* row 8 */
 __gshared Instruction[] INSTRUCTIONS_row_8 = [
@@ -672,7 +672,7 @@ __gshared Instruction[] INSTRUCTIONS_row_C = [
     Instruction("xadd", ps_EbGb),                   /* lo=0 */
     Instruction("xadd", ps_EvGv),                   /* lo=1 */
     Instruction("cmpps", ps_VpsWpsIb, 0, IS.SSE),   /* lo=2 */
-    Instruction("movnti", ps_MyGy),                 /* lo=3 */
+    Instruction("movnti", ps_MyGy, 0, IS.SSE2),     /* lo=3 */
     Instruction("pinsrw", ps_PqEwIb, 0, IS.SSE),    /* lo=4 */
     Instruction("pextrw", ps_GdNqIb, 0, IS.SSE),    /* lo=5 */
     Instruction("shufps", ps_VpsWpsIb, 0, IS.SSE),  /* lo=6 */
@@ -689,112 +689,112 @@ __gshared Instruction[] INSTRUCTIONS_row_C = [
 /* row D */
 __gshared Instruction[] INSTRUCTIONS_row_D = [
     Instruction("", null),                          /* lo=0 - invalid */
-    Instruction("psrlw", ps_PqQq),                  /* lo=1 */
-    Instruction("psrld", ps_PqQq),                  /* lo=2 */
-    Instruction("psrlq", ps_PqQq),                  /* lo=3 */
-    Instruction("paddq", ps_PqQq),                  /* lo=4 */
-    Instruction("pmullw", ps_PqQq),                 /* lo=5 */
+    Instruction("psrlw", ps_PqQq, 0, IS.MMX),       /* lo=1 */
+    Instruction("psrld", ps_PqQq, 0, IS.MMX),       /* lo=2 */
+    Instruction("psrlq", ps_PqQq, 0, IS.MMX),       /* lo=3 */
+    Instruction("paddq", ps_PqQq, 0, IS.SSE2),      /* lo=4 */
+    Instruction("pmullw", ps_PqQq, 0, IS.MMX),      /* lo=5 */
     Instruction("", null),                          /* lo=6 - invalid */
     Instruction("pmovmskb", ps_GdNq, 0, IS.SSE),    /* lo=7 */
-    Instruction("psubusb", ps_PqQq),                /* lo=8 */
-    Instruction("psubusw", ps_PqQq),                /* lo=9 */
+    Instruction("psubusb", ps_PqQq, 0, IS.MMX),     /* lo=8 */
+    Instruction("psubusw", ps_PqQq, 0, IS.MMX),     /* lo=9 */
     Instruction("pminub", ps_PqQq, 0, IS.SSE),      /* lo=A */
-    Instruction("pand", ps_PqQq),                   /* lo=B */
-    Instruction("paddusb", ps_PqQq),                /* lo=C */
-    Instruction("paddusw", ps_PqQq),                /* lo=D */
+    Instruction("pand", ps_PqQq, 0, IS.MMX),        /* lo=B */
+    Instruction("paddusb", ps_PqQq, 0, IS.MMX),     /* lo=C */
+    Instruction("paddusw", ps_PqQq, 0, IS.MMX),     /* lo=D */
     Instruction("pmaxub", ps_PqQq, 0, IS.SSE),      /* lo=E */
-    Instruction("pandn", ps_PqQq),                  /* lo=F */
+    Instruction("pandn", ps_PqQq, 0, IS.MMX),       /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_D_66 = [
     Instruction("addsubpd", ps_VpdWpd, 0, IS.SSE3), /* lo=0 */
-    Instruction("psrlw", ps_VoWo),                  /* lo=1 */
-    Instruction("psrld", ps_VoWo),                  /* lo=2 */
-    Instruction("psrlq", ps_VoWo),                  /* lo=3 */
+    Instruction("psrlw", ps_VoWo, 0, IS.SSE2),      /* lo=1 */
+    Instruction("psrld", ps_VoWo, 0, IS.SSE2),      /* lo=2 */
+    Instruction("psrlq", ps_VoWo, 0, IS.SSE2),      /* lo=3 */
     Instruction("paddq", ps_VoWo),                  /* lo=4 */
-    Instruction("pmullw", ps_VoWo),                 /* lo=5 */
+    Instruction("pmullw", ps_VoWo, 0, IS.SSE2),     /* lo=5 */
     Instruction("movq", ps_WqVq),                   /* lo=6 */
     Instruction("pmovmskb", ps_GdUo, 0, IS.SSE),    /* lo=7 */
-    Instruction("psubusb", ps_VoWo),                /* lo=8 */
-    Instruction("psubusw", ps_VoWo),                /* lo=9 */
+    Instruction("psubusb", ps_VoWo, 0, IS.SSE2),    /* lo=8 */
+    Instruction("psubusw", ps_VoWo, 0, IS.SSE2),    /* lo=9 */
     Instruction("pminub", ps_VoWo, 0, IS.SSE),      /* lo=A */
-    Instruction("pand", ps_VoWo),                   /* lo=B */
-    Instruction("paddusb", ps_VoWo),                /* lo=C */
-    Instruction("paddusw", ps_VoWo),                /* lo=D */
+    Instruction("pand", ps_VoWo, 0, IS.SSE2),       /* lo=B */
+    Instruction("paddusb", ps_VoWo, 0, IS.SSE2),    /* lo=C */
+    Instruction("paddusw", ps_VoWo, 0, IS.SSE2),    /* lo=D */
     Instruction("pmaxub", ps_VoWo, 0, IS.SSE),      /* lo=E */
-    Instruction("pandn", ps_VoWo),                  /* lo=F */
+    Instruction("pandn", ps_VoWo, 0, IS.SSE2),      /* lo=F */
 ];
 /* row E */
 __gshared Instruction[] INSTRUCTIONS_row_E = [
     Instruction("pavgb", ps_PqQq, 0, IS.SSE),       /* lo=0 */
-    Instruction("psraw", ps_PqQq),                  /* lo=1 */
-    Instruction("psrad", ps_PqQq),                  /* lo=2 */
+    Instruction("psraw", ps_PqQq, 0, IS.MMX),       /* lo=1 */
+    Instruction("psrad", ps_PqQq, 0, IS.MMX),       /* lo=2 */
     Instruction("pavgw", ps_PqQq, 0, IS.SSE),       /* lo=3 */
     Instruction("pmulhuw", ps_PqQq, 0, IS.SSE),     /* lo=4 */
-    Instruction("pmulhw", ps_PqQq),                 /* lo=5 */
+    Instruction("pmulhw", ps_PqQq, 0, IS.MMX),      /* lo=5 */
     Instruction("", null),                          /* lo=6 - invalid */
     Instruction("movntq", ps_MqPq, 0, IS.SSE),      /* lo=7 */
-    Instruction("psubsb", ps_PqQq),                 /* lo=8 */
-    Instruction("psubsw", ps_PqQq),                 /* lo=9 */
+    Instruction("psubsb", ps_PqQq, 0, IS.MMX),      /* lo=8 */
+    Instruction("psubsw", ps_PqQq, 0, IS.MMX),      /* lo=9 */
     Instruction("pminsw", ps_PqQq, 0, IS.SSE),      /* lo=A */
-    Instruction("por", ps_PqQq),                    /* lo=B */
-    Instruction("paddsb", ps_PqQq),                 /* lo=C */
-    Instruction("paddsw", ps_PqQq),                 /* lo=D */
+    Instruction("por", ps_PqQq, 0, IS.MMX),         /* lo=B */
+    Instruction("paddsb", ps_PqQq, 0, IS.MMX),      /* lo=C */
+    Instruction("paddsw", ps_PqQq, 0, IS.MMX),      /* lo=D */
     Instruction("pmaxsw", ps_PqQq, 0, IS.SSE),      /* lo=E */
-    Instruction("pxor", ps_PqQq),                   /* lo=F */
+    Instruction("pxor", ps_PqQq, 0, IS.MMX),        /* lo=F */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_E_66 = [
     Instruction("pavgb", ps_VoWo, 0, IS.SSE),       /* lo=0 */
-    Instruction("psraw", ps_VoWo),                  /* lo=1 */
-    Instruction("psrad", ps_VoWo),                  /* lo=2 */
+    Instruction("psraw", ps_VoWo, 0, IS.SSE2),      /* lo=1 */
+    Instruction("psrad", ps_VoWo, 0, IS.SSE2),      /* lo=2 */
     Instruction("pavgw", ps_VoWo, 0, IS.SSE),       /* lo=3 */
     Instruction("pmulhuw", ps_VoWo, 0, IS.SSE),     /* lo=4 */
-    Instruction("pmulhw", ps_VoWo),                 /* lo=5 */
-    Instruction("cvttpd2dq", ps_VpjWpd),            /* lo=6 */
-    Instruction("movntdq", ps_MoVo),                /* lo=7 */
-    Instruction("psubsb", ps_VoWo),                 /* lo=8 */
-    Instruction("psubsw", ps_VoWo),                 /* lo=9 */
+    Instruction("pmulhw", ps_VoWo, 0, IS.SSE2),     /* lo=5 */
+    Instruction("cvttpd2dq", ps_VpjWpd, 0, IS.SSE2),/* lo=6 */
+    Instruction("movntdq", ps_MoVo, 0, IS.SSE2),    /* lo=7 */
+    Instruction("psubsb", ps_VoWo, 0, IS.SSE2),     /* lo=8 */
+    Instruction("psubsw", ps_VoWo, 0, IS.SSE2),     /* lo=9 */
     Instruction("pminsw", ps_VoWo, 0, IS.SSE),      /* lo=A */
-    Instruction("por", ps_VoWo),                    /* lo=B */
-    Instruction("paddsb", ps_VoWo),                 /* lo=C */
-    Instruction("paddsw", ps_VoWo),                 /* lo=D */
+    Instruction("por", ps_VoWo, 0, IS.SSE2),        /* lo=B */
+    Instruction("paddsb", ps_VoWo, 0, IS.SSE2),     /* lo=C */
+    Instruction("paddsw", ps_VoWo, 0, IS.SSE2),     /* lo=D */
     Instruction("pmaxsw", ps_VoWo, 0, IS.SSE),      /* lo=E */
-    Instruction("pxor", ps_VoWo),                   /* lo=F */
+    Instruction("pxor", ps_VoWo, 0, IS.SSE2),       /* lo=F */
 ];
 /* row F */
 __gshared Instruction[] INSTRUCTIONS_row_F = [
     Instruction("", null),                          /* lo=0 - invalid */
-    Instruction("psllw", ps_PqQq),                  /* lo=1 */
-    Instruction("pslld", ps_PqQq),                  /* lo=2 */
-    Instruction("psllq", ps_PqQq),                  /* lo=3 */
-    Instruction("pmuludq", ps_PqQq),                /* lo=4 */
-    Instruction("pmaddwd", ps_PqQq),                /* lo=5 */
+    Instruction("psllw", ps_PqQq, 0, IS.MMX),       /* lo=1 */
+    Instruction("pslld", ps_PqQq, 0, IS.MMX),       /* lo=2 */
+    Instruction("psllq", ps_PqQq, 0, IS.MMX),       /* lo=3 */
+    Instruction("pmuludq", ps_PqQq, 0, IS.SSE2),    /* lo=4 */
+    Instruction("pmaddwd", ps_PqQq, 0, IS.MMX),     /* lo=5 */
     Instruction("psadbw", ps_PqQq, 0, IS.SSE),      /* lo=6 */
     Instruction("maskmovq", ps_PqNq, 0, IS.SSE),    /* lo=7 */
-    Instruction("psubb", ps_PqQq),                  /* lo=8 */
-    Instruction("psubw", ps_PqQq),                  /* lo=9 */
-    Instruction("psubd", ps_PqQq),                  /* lo=A */
-    Instruction("psubq", ps_PqQq),                  /* lo=B */
-    Instruction("paddb", ps_PqQq),                  /* lo=C */
-    Instruction("paddw", ps_PqQq),                  /* lo=D */
-    Instruction("paddd", ps_PqQq),                  /* lo=E */
+    Instruction("psubb", ps_PqQq, 0, IS.MMX),       /* lo=8 */
+    Instruction("psubw", ps_PqQq, 0, IS.MMX),       /* lo=9 */
+    Instruction("psubd", ps_PqQq, 0, IS.MMX),       /* lo=A */
+    Instruction("psubq", ps_PqQq, 0, IS.SSE2),      /* lo=B */
+    Instruction("paddb", ps_PqQq, 0, IS.MMX),       /* lo=C */
+    Instruction("paddw", ps_PqQq, 0, IS.MMX),       /* lo=D */
+    Instruction("paddd", ps_PqQq, 0, IS.MMX),       /* lo=E */
     Instruction("", null),                          /* lo=F - UD0 */
 ];
 __gshared Instruction[] INSTRUCTIONS_row_F_66 = [
     Instruction("", null),                              /* lo=0 - invalid */
-    Instruction("psllw", ps_VpwWoq),                    /* lo=1 */
-    Instruction("pslld", ps_VpdwWoq),                   /* lo=2 */
-    Instruction("psllq", ps_VpqwWoq),                   /* lo=3 */
-    Instruction("pmuludq", ps_VpjWpj),                  /* lo=4 */
-    Instruction("pmaddwd", ps_VpiWpi),                  /* lo=5 */
+    Instruction("psllw", ps_VpwWoq, 0, IS.SSE2),        /* lo=1 */
+    Instruction("pslld", ps_VpdwWoq, 0, IS.SSE2),       /* lo=2 */
+    Instruction("psllq", ps_VpqwWoq, 0, IS.SSE2),       /* lo=3 */
+    Instruction("pmuludq", ps_VpjWpj, 0, IS.SSE2),      /* lo=4 */
+    Instruction("pmaddwd", ps_VpiWpi, 0, IS.SSE2),      /* lo=5 */
     Instruction("psadbw", ps_VpkWpk, 0, IS.SSE),        /* lo=6 */
-    Instruction("maskmovdqu", ps_VpbUpb),               /* lo=7 */
-    Instruction("psubb", ps_VoWo),                      /* lo=8 */
-    Instruction("psubw", ps_VoWo),                      /* lo=9 */
-    Instruction("psubd", ps_VoWo),                      /* lo=A */
-    Instruction("psubq", ps_VoWo),                      /* lo=B */
-    Instruction("paddb", ps_VoWo),                      /* lo=C */
-    Instruction("paddw", ps_VoWo),                      /* lo=D */
-    Instruction("paddd", ps_VoWo),                      /* lo=E */
+    Instruction("maskmovdqu", ps_VpbUpb, 0, IS.SSE2),   /* lo=7 */
+    Instruction("psubb", ps_VoWo, 0, IS.SSE2),          /* lo=8 */
+    Instruction("psubw", ps_VoWo, 0, IS.SSE2),          /* lo=9 */
+    Instruction("psubd", ps_VoWo, 0, IS.SSE2),          /* lo=A */
+    Instruction("psubq", ps_VoWo, 0, IS.SSE2),          /* lo=B */
+    Instruction("paddb", ps_VoWo, 0, IS.SSE2),          /* lo=C */
+    Instruction("paddw", ps_VoWo, 0, IS.SSE2),          /* lo=D */
+    Instruction("paddd", ps_VoWo, 0, IS.SSE2),          /* lo=E */
     Instruction("", null),                              /* lo=F - UD0 */
 ];
 /* group 6 */

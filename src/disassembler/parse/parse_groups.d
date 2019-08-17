@@ -189,24 +189,24 @@ void group15(Parser p) {
         if(modrm.reg==0x6 && modrm.mod!=0b11) p.instr.copy(Instruction("clwb", ps_Mb));
     } else {
         switch(modrm.reg) {
-            case 0: p.instr.copy(Instruction("fxsave", ps_M)); break;
-            case 1: p.instr.copy(Instruction("fxrstor", ps_M)); break;
+            case 0: p.instr.copy(Instruction("fxsave", ps_M, 0, IS.SSE)); break;
+            case 1: p.instr.copy(Instruction("fxrstor", ps_M, 0, IS.SSE)); break;
             case 2: p.instr.copy(Instruction("ldmxcsr", ps_Md, 0, IS.SSE)); break;
             case 3: p.instr.copy(Instruction("stmxcsr", ps_Md, 0, IS.SSE)); break;
             case 4:
                 if(modrm.mod!=0b11) p.instr.copy(Instruction("xsave", ps_M));
                 break;
             case 5:
-                if(modrm.mod==0b11) p.instr.copy(Instruction("lfence", ps_none));
+                if(modrm.mod==0b11) p.instr.copy(Instruction("lfence", ps_none, 0, IS.SSE2));
                 else                p.instr.copy(Instruction("xrstor", ps_M));
                 break;
             case 6:
-                if(modrm.mod==0b11) p.instr.copy(Instruction("mfence", ps_none));
+                if(modrm.mod==0b11) p.instr.copy(Instruction("mfence", ps_none, 0, IS.SSE2));
                 else                p.instr.copy(Instruction("xsaveopt", ps_M));
                 break;
             case 7:
                 if(modrm.mod==0b11) p.instr.copy(Instruction("sfence", ps_none, 0, IS.SSE));
-                else                p.instr.copy(Instruction("clflush", ps_Mb));
+                else                p.instr.copy(Instruction("clflush", ps_Mb, 0, IS.SSE2));
                 break;
             default: break;
         }

@@ -7,6 +7,7 @@ enum IS : uint {
     /* x86_64 Standard Instructions */
     STD = 0,
 
+    MMX,
     SSE,
     SSE2,
     /* Instruction sets after x86_64/SSE2 */
