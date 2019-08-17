@@ -28,11 +28,10 @@ span {
 
     overflow-y: scroll;
 
-    grid-template-columns: 5fr 1fr 6fr 6fr;
+    grid-template-columns: 8fr 3fr 10fr 10fr;
 
     grid-column-gap: 15px;
 }
-
 .bytes {
     text-align: right;
     color: #888;
@@ -48,6 +47,15 @@ span {
 }
 .ops {
     color:rgb(140, 155, 115);
+}
+.ops a {
+    text-decoration: none;
+}
+.ops a, .ops a:link, .ops a:visited, .ops:active {
+    color: rgb(109, 167, 200);
+}
+.ops a:hover {
+    text-decoration: underline;
 }
 .comment {
     color: #777;

@@ -17,10 +17,7 @@ public:
 
         auto parser = new Parser(bytes, fromOffset, codeBase);
 
-        // loop here
-
         int count = 0;
-        //chat("################################################");
 
         while(!parser.eof()) {
 
@@ -29,8 +26,17 @@ public:
 
             count++;
 
-            //chat("################################################");
             if(count==169) break;
+        }
+
+        /* Set labels */
+        auto labels = parser.getLabels();
+        foreach(ref i; instructions) {
+            auto offset = i.offset;
+
+            if(labels.containsKey(offset)) {
+                i.label = labels[offset];
+            }
         }
 
         return instructions;

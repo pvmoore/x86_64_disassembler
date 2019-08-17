@@ -797,36 +797,4 @@ __gshared Instruction[] INSTRUCTIONS_row_F_66 = [
     Instruction("paddd", ps_VoWo, 0, IS.SSE2),          /* lo=E */
     Instruction("", null),                              /* lo=F - UD0 */
 ];
-/* group 6 */
-__gshared Instruction[] INSTRUCTIONS_0F_00_grp6 = [
-    Instruction("sldt", ps_Mw_or_Rv),   /* reg=0 */
-    Instruction("str", ps_Mw_or_Rv),    /* reg=1 */
-    Instruction("lldt", ps_Ew),         /* reg=2 */
-    Instruction("ltr", ps_Ew),          /* reg=3 */
-    Instruction("verr", ps_Ew),         /* reg=4 */
-    Instruction("verw", ps_Ew),         /* reg=5 */
-    Instruction("", null),              /* reg=6 - invalid */
-    Instruction("", null),              /* reg=7 - invalid */
-];
-/* group 7 */
-__gshared Instruction[] INSTRUCTIONS_0F_01_grp7 = [
-    Instruction("sgdt", ps_Ms),         /* reg=0 */
-    Instruction("sidt", ps_Ms),         /* reg=1 */
-    Instruction("lgdt", ps_Ms),         /* reg=2 */
-    Instruction("lidt", ps_Ms),         /* reg=3 */
-    Instruction("smsw", ps_Mw_or_Rv),   /* reg=4 */
-    Instruction("", null),              /* reg=5 - invalid*/
-    Instruction("lmsw", ps_Ew),         /* reg=6 */
-    Instruction("invlpg", ps_Mb),       /* reg=7 */
-];
-/* group 8 */
-__gshared Instruction[] INSTRUCTIONS_B_grp8 = [
-    Instruction("", null),         /* reg=0 - invalid */
-    Instruction("", null),         /* reg=1 - invalid */
-    Instruction("", null),         /* reg=2 - invalid */
-    Instruction("", null),         /* reg=3 - invalid */
-    Instruction("bt", ps_EvIb),    /* reg=4 */
-    Instruction("bts", ps_EvIb),   /* reg=5 */
-    Instruction("btr", ps_EvIb),   /* reg=6 */
-    Instruction("btc", ps_EvIb),   /* reg=7 */
-];
+

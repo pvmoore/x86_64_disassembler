@@ -8,14 +8,16 @@ private:
     uint codeBase;
     uint fromOffset;
     ubyte[] code;
+    string[uint] labels;
 public:
     Prefix prefix;
     Instruction instr;
 
     this(ubyte[] code, uint fromOffset, uint codeBase) {
-        this.code     = code;
-        this.codeBase = codeBase;
-        this.bytes    = new ByteReader(code);
+        this.code        = code;
+        this.codeBase    = codeBase;
+        this.bytes       = new ByteReader(code);
+
         this.bytes.skip(fromOffset);
     }
     Instruction parse() {
@@ -66,6 +68,25 @@ public:
     }
     bool isAVX() {
         return prefix.hasVexBits;
+    }
+    void addJumpTarget(int ripOffset) {
+        auto currentOffset = cast(int)(bytes.position+codeBase);
+
+        auto targetOffset = cast(uint)(currentOffset + ripOffset);
+
+        string label;
+        auto labelPtr = targetOffset in labels;
+        if(labelPtr) {
+            label = *labelPtr;
+        } else {
+            label = "@%s".format(labels.length);
+            labels[targetOffset] = label;
+        }
+
+        instr.targetLabel = label;
+    }
+    string[uint] getLabels() {
+        return labels;
     }
 private:
     char getSizePostfix() {

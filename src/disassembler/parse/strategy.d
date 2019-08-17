@@ -531,13 +531,13 @@ final class Iz : ParseStrategy {
 final class Jb : ParseStrategy {
 	// 8 bit offset relative to RIP
 	void parse(Parser p) {
-		int value = p.readByte();
+		int value = cast(byte)p.readByte();
 
 		p.instr.addOperand(new ImmOperand(value, 8));
 
 		p.instr.immediate = Immediate(value, 8);
 
-		// TODO - display label here instead of offset
+		p.addJumpTarget(value);
 	}
 }
 final class Jz : ParseStrategy {
@@ -551,6 +551,8 @@ final class Jz : ParseStrategy {
 		p.instr.addOperand(op);
 
 		p.instr.displacement = Displacement(value, numBits);
+
+		p.addJumpTarget(value);
 
 		/* TODO - fixme
 		if(state.instr.opcode=="call" && state.instr.offset+1 in state.objFile.getFixupsForSegment(1))
@@ -573,7 +575,6 @@ final class Jz : ParseStrategy {
 			//	Utils.formatNumber(state.instr.offset + state.instr.bytes.length + off, 32);
 			state.instr.str = state.instr.opcode ~  " " ~ state.labels.get(labelOffset);
 		}
-		*/
 
 		// if(state.instr.prefix.branch==Branch.TAKE)
 		// {
@@ -583,6 +584,7 @@ final class Jz : ParseStrategy {
 		// {
 		// 	state.instr.comment ~= "HINT: don't take branch";
 		// }
+		*/
 	}
 }
 

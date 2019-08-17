@@ -35,8 +35,7 @@ import disassembler.parse.parse_vex;
 import disassembler.parse.strategy;
 import disassembler.util;
 
-import disassembler.instructions.instruction;
-import disassembler.instructions.threebytes;
+import disassembler.instruction;
 
 enum chatty = true;
 

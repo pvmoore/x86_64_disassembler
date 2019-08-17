@@ -30,11 +30,19 @@ public:
             buf ~= "</div>";
 
             // offset
-            string offset = "%04x%s".format(i.offset, (i.offset&15)==0 ? "=" : " ");
-            buf ~= "<span class='offset'>%s</span>".format(offset);
+            string offset = "%04x%s".format(i.offset, (i.offset&15)==0 ? "=" : "&nbsp;");
+            buf ~= "<span class='offset'>%s".format(offset);
+            if(i.label) {
+                buf ~= " <a name='%s'>%s</a>".format(i.label, i.label);
+            }
+            buf ~= "</span>";
 
             // operands
-            buf ~= "<div class='ops'>%s %s</div>".format(i.getMnemonicString(), i.getOperandsString(Operand.Fmt.HTML));
+            buf ~= "<div class='ops'>%s %s".format(i.getMnemonicString(), i.getOperandsString(Operand.Fmt.HTML));
+            if(i.targetLabel) {
+                buf ~= "&nbsp;-->&nbsp;<a href='#%s'>%s</a>".format(i.targetLabel, i.targetLabel);
+            }
+            buf ~= "</div>";
 
             // comments
             string comments = i.getComments();

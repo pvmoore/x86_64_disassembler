@@ -1,4 +1,4 @@
-module disassembler.instructions.instruction;
+module disassembler.instruction;
 
 import disassembler.all;
 
@@ -17,7 +17,7 @@ public:
     ParseStrategy parseStrategy;
     string mnemonic;
     uint fixedSize;
-    uint instructionSet;
+    IS instructionSet;
     /* end of copied state */
 
     uint offset;
@@ -25,6 +25,9 @@ public:
     Prefix prefix;
     ModRM modrm;
     SIB sib;
+
+    string targetLabel;     // The label of the target instruction if this is a jmp or call
+    string label;           // Unique label if this instruction is a jump target
 
     bool hasModrm;
     bool hasSib;
@@ -34,7 +37,7 @@ public:
 
     Operand[] ops;
 
-    this(string mnemonic, inout ParseStrategy parseStrategy, uint fixedSize = 0, uint instructionSet = IS.STD) {
+    this(string mnemonic, inout ParseStrategy parseStrategy, uint fixedSize = 0, IS instructionSet = IS.STD) {
         this.mnemonic       = mnemonic;
         this.parseStrategy  = cast(ParseStrategy)parseStrategy;
         this.fixedSize      = fixedSize;

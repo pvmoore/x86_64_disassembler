@@ -105,7 +105,7 @@ void group9(Parser p) {
         if(p.prefix.rexW()) p.instr.copy(Instruction("cmpxchg16b", ps_Mo));
         else p.instr.copy(Instruction("cmpxchg8b", ps_Mq));
     }
-    else if(modrm.reg==0x6) p.instr.copy(Instruction("rdrand", ps_Rv));
+    else if(modrm.reg==0x6) p.instr.copy(Instruction("rdrand", ps_Rv, 0, IS.RDRAND));
 }
 void group10(Parser p) {
     auto modrm = ModRM(p.peekByte());
@@ -121,16 +121,16 @@ void group12(Parser p) {
     if(p.prefix.opSize) {
         /* 66 */
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrlw", ps_UoIb)); break;
-            case 4: p.instr.copy(Instruction("psraw", ps_UoIb)); break;
-            case 6: p.instr.copy(Instruction("psllw", ps_UoIb)); break;
+            case 2: p.instr.copy(Instruction("psrlw", ps_UoIb, 0, IS.SSE2)); break;
+            case 4: p.instr.copy(Instruction("psraw", ps_UoIb, 0, IS.SSE2)); break;
+            case 6: p.instr.copy(Instruction("psllw", ps_UoIb, 0, IS.SSE2)); break;
             default: break;
         }
     } else {
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrlw", ps_NqIb)); break;
-            case 4: p.instr.copy(Instruction("psraw", ps_NqIb)); break;
-            case 6: p.instr.copy(Instruction("psllw", ps_NqIb)); break;
+            case 2: p.instr.copy(Instruction("psrlw", ps_NqIb, 0, IS.MMX)); break;
+            case 4: p.instr.copy(Instruction("psraw", ps_NqIb, 0, IS.MMX)); break;
+            case 6: p.instr.copy(Instruction("psllw", ps_NqIb, 0, IS.MMX)); break;
             default: break;
         }
     }
@@ -140,16 +140,16 @@ void group13(Parser p) {
     if(p.prefix.opSize) {
         /* 66 */
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrld", ps_UoIb)); break;
-            case 4: p.instr.copy(Instruction("psrad", ps_UoIb)); break;
-            case 6: p.instr.copy(Instruction("pslld", ps_UoIb)); break;
+            case 2: p.instr.copy(Instruction("psrld", ps_UoIb, 0, IS.SSE2)); break;
+            case 4: p.instr.copy(Instruction("psrad", ps_UoIb, 0, IS.SSE2)); break;
+            case 6: p.instr.copy(Instruction("pslld", ps_UoIb, 0, IS.SSE2)); break;
             default: break;
         }
     } else {
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrld", ps_NqIb)); break;
-            case 4: p.instr.copy(Instruction("psrad", ps_NqIb)); break;
-            case 6: p.instr.copy(Instruction("pslld", ps_NqIb)); break;
+            case 2: p.instr.copy(Instruction("psrld", ps_NqIb, 0, IS.MMX)); break;
+            case 4: p.instr.copy(Instruction("psrad", ps_NqIb, 0, IS.MMX)); break;
+            case 6: p.instr.copy(Instruction("pslld", ps_NqIb, 0, IS.MMX)); break;
             default: break;
         }
     }
@@ -159,16 +159,16 @@ void group14(Parser p) {
     if(p.prefix.opSize) {
         /* 66 */
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrlq", ps_UoIb)); break;
-            case 3: p.instr.copy(Instruction("psrldq", ps_UoIb)); break;
-            case 6: p.instr.copy(Instruction("psllq", ps_UoIb)); break;
-            case 7: p.instr.copy(Instruction("pslldq", ps_UoIb)); break;
+            case 2: p.instr.copy(Instruction("psrlq", ps_UoIb, 0, IS.SSE2)); break;
+            case 3: p.instr.copy(Instruction("psrldq", ps_UoIb, 0, IS.SSE2)); break;
+            case 6: p.instr.copy(Instruction("psllq", ps_UoIb, 0, IS.SSE2)); break;
+            case 7: p.instr.copy(Instruction("pslldq", ps_UoIb, 0, IS.SSE2)); break;
             default: break;
         }
     } else {
         switch(modrm.reg) {
-            case 2: p.instr.copy(Instruction("psrlq", ps_NqIb)); break;
-            case 6: p.instr.copy(Instruction("psllq", ps_NqIb)); break;
+            case 2: p.instr.copy(Instruction("psrlq", ps_NqIb, 0, IS.MMX)); break;
+            case 6: p.instr.copy(Instruction("psllq", ps_NqIb, 0, IS.MMX)); break;
             default: break;
         }
     }
@@ -233,9 +233,178 @@ void group17(Parser p) {
     auto modrm = ModRM(p.peekByte());
     if(p.prefix.opSize && modrm.reg==0) {
         /* 66 */
-        p.instr.copy(Instruction("extrq", ps_VoqIbIb));
+        p.instr.copy(Instruction("extrq", ps_VoqIbIb, 0, IS.SSE4_1));
     }
 }
 void groupP(Parser p) {
     p.instr.copy(Instruction("prefetch", ps_none));
 }
+
+/* group 1 */
+__gshared Instruction[] INSTRUCTIONS_80 = [
+    Instruction("add", ps_EbIb),            /* 0x81 reg=0 */
+    Instruction("or",  ps_EbIb),            /* 0x81 reg=1 */
+    Instruction("adc", ps_EbIb),            /* 0x81 reg=2 */
+    Instruction("sbb", ps_EbIb),            /* 0x81 reg=3 */
+    Instruction("and", ps_EbIb),            /* 0x81 reg=4 */
+    Instruction("sub", ps_EbIb),            /* 0x81 reg=5 */
+    Instruction("xor", ps_EbIb),            /* 0x81 reg=6 */
+    Instruction("cmp", ps_EbIb),            /* 0x81 reg=7 */
+];
+
+__gshared Instruction[] INSTRUCTIONS_81 = [
+    Instruction("add", ps_EvIz),            /* 0x81 reg=0 */
+    Instruction("or",  ps_EvIz),            /* 0x81 reg=1 */
+    Instruction("adc", ps_EvIz),            /* 0x81 reg=2 */
+    Instruction("sbb", ps_EvIz),            /* 0x81 reg=3 */
+    Instruction("and", ps_EvIz),            /* 0x81 reg=4 */
+    Instruction("sub", ps_EvIz),            /* 0x81 reg=5 */
+    Instruction("xor", ps_EvIz),            /* 0x81 reg=6 */
+    Instruction("cmp", ps_EvIz),            /* 0x81 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_82 = [
+    Instruction("add", ps_EbIb),            /* 0x82 reg=0 */
+    Instruction("or",  ps_EbIb),            /* 0x82 reg=1 */
+    Instruction("adc", ps_EbIb),            /* 0x82 reg=2 */
+    Instruction("sbb", ps_EbIb),            /* 0x82 reg=3 */
+    Instruction("and", ps_EbIb),            /* 0x82 reg=4 */
+    Instruction("sub", ps_EbIb),            /* 0x82 reg=5 */
+    Instruction("xor", ps_EbIb),            /* 0x82 reg=6 */
+    Instruction("cmp", ps_EbIb),            /* 0x82 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_83 = [
+    Instruction("add", ps_EvIb),            /* 0x83 reg=0 */
+    Instruction("or",  ps_EvIb),            /* 0x83 reg=1 */
+    Instruction("adc", ps_EvIb),            /* 0x83 reg=2 */
+    Instruction("sbb", ps_EvIb),            /* 0x83 reg=3 */
+    Instruction("and", ps_EvIb),            /* 0x83 reg=4 */
+    Instruction("sub", ps_EvIb),            /* 0x83 reg=5 */
+    Instruction("xor", ps_EvIb),            /* 0x83 reg=6 */
+    Instruction("cmp", ps_EvIb),            /* 0x83 reg=7 */
+];
+/* group 2 */
+__gshared Instruction[] INSTRUCTIONS_C0 = [
+    Instruction("rol", ps_EbIb),            /* 0xC0 reg=0 */
+    Instruction("ror", ps_EbIb),            /* 0xC0 reg=1 */
+    Instruction("rcl", ps_EbIb),            /* 0xC0 reg=2 */
+    Instruction("rcr", ps_EbIb),            /* 0xC0 reg=3 */
+    Instruction("shl", ps_EbIb),            /* 0xC0 reg=4 */
+    Instruction("shr", ps_EbIb),            /* 0xC0 reg=5 */
+    Instruction("sal", ps_EbIb),            /* 0xC0 reg=6 */
+    Instruction("sar", ps_EbIb),            /* 0xC0 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_C1 = [
+    Instruction("rol", ps_EvIb),            /* 0xC1 reg=0 */
+    Instruction("ror", ps_EvIb),            /* 0xC1 reg=1 */
+    Instruction("rcl", ps_EvIb),            /* 0xC1 reg=2 */
+    Instruction("rcr", ps_EvIb),            /* 0xC1 reg=3 */
+    Instruction("shl", ps_EvIb),            /* 0xC1 reg=4 */
+    Instruction("shr", ps_EvIb),            /* 0xC1 reg=5 */
+    Instruction("sal", ps_EvIb),            /* 0xC1 reg=6 */
+    Instruction("sar", ps_EvIb),            /* 0xC1 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_D0 = [
+    Instruction("rol", ps_Eb_1),            /* 0xD0 reg=0 */
+    Instruction("ror", ps_Eb_1),            /* 0xD0 reg=1 */
+    Instruction("rcl", ps_Eb_1),            /* 0xD0 reg=2 */
+    Instruction("rcr", ps_Eb_1),            /* 0xD0 reg=3 */
+    Instruction("shl", ps_Eb_1),            /* 0xD0 reg=4 */
+    Instruction("shr", ps_Eb_1),            /* 0xD0 reg=5 */
+    Instruction("sal", ps_Eb_1),            /* 0xD0 reg=6 */
+    Instruction("sar", ps_Eb_1),            /* 0xD0 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_D1 = [
+    Instruction("rol", ps_Ev_1),            /* 0xD1 reg=0 */
+    Instruction("ror", ps_Ev_1),            /* 0xD1 reg=1 */
+    Instruction("rcl", ps_Ev_1),            /* 0xD1 reg=2 */
+    Instruction("rcr", ps_Ev_1),            /* 0xD1 reg=3 */
+    Instruction("shl", ps_Ev_1),            /* 0xD1 reg=4 */
+    Instruction("shr", ps_Ev_1),            /* 0xD1 reg=5 */
+    Instruction("sal", ps_Ev_1),            /* 0xD1 reg=6 */
+    Instruction("sar", ps_Ev_1),            /* 0xD1 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_D2 = [
+    Instruction("rol", ps_EbCL),            /* 0xD2 reg=0 */
+    Instruction("ror", ps_EbCL),            /* 0xD2 reg=1 */
+    Instruction("rcl", ps_EbCL),            /* 0xD2 reg=2 */
+    Instruction("rcr", ps_EbCL),            /* 0xD2 reg=3 */
+    Instruction("shl", ps_EbCL),            /* 0xD2 reg=4 */
+    Instruction("shr", ps_EbCL),            /* 0xD2 reg=5 */
+    Instruction("sal", ps_EbCL),            /* 0xD2 reg=6 */
+    Instruction("sar", ps_EbCL),            /* 0xD2 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_D3 = [
+    Instruction("rol", ps_EvCL),            /* 0xD3 reg=0 */
+    Instruction("ror", ps_EvCL),            /* 0xD3 reg=1 */
+    Instruction("rcl", ps_EvCL),            /* 0xD3 reg=2 */
+    Instruction("rcr", ps_EvCL),            /* 0xD3 reg=3 */
+    Instruction("shl", ps_EvCL),            /* 0xD3 reg=4 */
+    Instruction("shr", ps_EvCL),            /* 0xD3 reg=5 */
+    Instruction("sal", ps_EvCL),            /* 0xD3 reg=6 */
+    Instruction("sar", ps_EvCL),            /* 0xD3 reg=7 */
+];
+/* group 3 */
+__gshared Instruction[] INSTRUCTIONS_F6 = [
+    Instruction("test", ps_EbIb),           /* 0xF6 reg=0 */
+    Instruction("test", ps_EbIb),           /* 0xF6 reg=1 */
+    Instruction("not",  ps_Eb),             /* 0xF6 reg=2 */
+    Instruction("neg",  ps_Eb),             /* 0xF6 reg=3 */
+    Instruction("mul",  ps_Eb),             /* 0xF6 reg=4 */
+    Instruction("imul", ps_Eb),             /* 0xF6 reg=5 */
+    Instruction("div",  ps_Eb),             /* 0xF6 reg=6 */
+    Instruction("idiv", ps_Eb),             /* 0xF6 reg=7 */
+];
+__gshared Instruction[] INSTRUCTIONS_F7 = [
+    Instruction("test", ps_EvIz),           /* 0xF7 reg=0 */
+    Instruction("test", ps_EvIz),           /* 0xF7 reg=1 */
+    Instruction("not",  ps_Ev),             /* 0xF7 reg=2 */
+    Instruction("neg",  ps_Ev),             /* 0xF7 reg=3 */
+    Instruction("mul",  ps_Ev),             /* 0xF7 reg=4 */
+    Instruction("imul", ps_Ev),             /* 0xF7 reg=5 */
+    Instruction("div",  ps_Ev),             /* 0xF7 reg=6 */
+    Instruction("idiv", ps_Ev),             /* 0xF7 reg=7 */
+];
+/* group 5 */
+__gshared Instruction[] INSTRUCTIONS_FF = [
+    Instruction("inc", ps_Ev),              /* 0xFF reg=0 */
+    Instruction("dec",  ps_Ev),             /* 0xFF reg=1 */
+    Instruction("call", ps_Ev, 64),         /* 0xFF reg=2 */
+    Instruction("call", ps_Mp),             /* 0xFF reg=3 */
+    Instruction("jmp", ps_Ev, 64),          /* 0xFF reg=4 */
+    Instruction("jmp", ps_Mp),              /* 0xFF reg=5 */
+    Instruction("push", ps_Ev, 64),         /* 0xFF reg=6 */
+    Instruction("nop", null),               /* 0xFF reg=7 */
+];
+/* group 6 */
+__gshared Instruction[] INSTRUCTIONS_0F_00_grp6 = [
+    Instruction("sldt", ps_Mw_or_Rv),       /* reg=0 */
+    Instruction("str", ps_Mw_or_Rv),        /* reg=1 */
+    Instruction("lldt", ps_Ew),             /* reg=2 */
+    Instruction("ltr", ps_Ew),              /* reg=3 */
+    Instruction("verr", ps_Ew),             /* reg=4 */
+    Instruction("verw", ps_Ew),             /* reg=5 */
+    Instruction("", null),                  /* reg=6 - invalid */
+    Instruction("", null),                  /* reg=7 - invalid */
+];
+/* group 7 */
+__gshared Instruction[] INSTRUCTIONS_0F_01_grp7 = [
+    Instruction("sgdt", ps_Ms),             /* reg=0 */
+    Instruction("sidt", ps_Ms),             /* reg=1 */
+    Instruction("lgdt", ps_Ms),             /* reg=2 */
+    Instruction("lidt", ps_Ms),             /* reg=3 */
+    Instruction("smsw", ps_Mw_or_Rv),       /* reg=4 */
+    Instruction("", null),                  /* reg=5 - invalid*/
+    Instruction("lmsw", ps_Ew),             /* reg=6 */
+    Instruction("invlpg", ps_Mb),           /* reg=7 */
+];
+/* group 8 */
+__gshared Instruction[] INSTRUCTIONS_B_grp8 = [
+    Instruction("", null),                  /* reg=0 - invalid */
+    Instruction("", null),                  /* reg=1 - invalid */
+    Instruction("", null),                  /* reg=2 - invalid */
+    Instruction("", null),                  /* reg=3 - invalid */
+    Instruction("bt", ps_EvIb),             /* reg=4 */
+    Instruction("bts", ps_EvIb),            /* reg=5 */
+    Instruction("btr", ps_EvIb),            /* reg=6 */
+    Instruction("btc", ps_EvIb),            /* reg=7 */
+];

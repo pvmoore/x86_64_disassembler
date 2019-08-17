@@ -32,6 +32,7 @@ enum IS : uint {
     TXT,        // Trusted Execution Technology
     TSX,        // Transactional Synchronization Extensions (Broadwell)
     SGX,        // Software Guard Extensions
+    RDRAND,     // Random number generator (Ivy Bridge) https://en.wikipedia.org/wiki/RdRand
 
     AMD_V,      // AMD Virtualization
     VT_x,       // Intel Virtualization
