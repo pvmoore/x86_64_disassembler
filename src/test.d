@@ -20,7 +20,7 @@ void main(string[] args) {
     auto dis = new Disassembler();
 
     //auto instructions = dis.processAll(code[76880..$]);
-    auto instructions = dis.processAll(code, 3665, pe.getCodeBase());
+    auto instructions = dis.processAll(code, 4096, pe.getCodeBase());
 
     writefln("Instructions:");
     foreach(i; instructions) {
@@ -36,4 +36,23 @@ void main(string[] args) {
     page.render();
 
     writefln("Finished");
+
+
+
+    testing();
+}
+
+align(16)
+__gshared ulong mem, mem2;
+
+void testing() {
+    asm {
+        push RAX;
+
+        movhlps XMM1, XMM2;
+
+
+
+        pop RAX;
+    }
 }

@@ -10,10 +10,11 @@ void checkTestSuite(Instruction instr) {
         if(t.code.length == bytes.length && t.code[] == bytes[]) return;
     }
 
+
     auto b  = instr.bytes[instr.prefix.bytes.length];
     auto b2 = instr.bytes.length > instr.prefix.bytes.length+1 ? instr.bytes[instr.prefix.bytes.length+1] : 0;
 
-    writefln("Test([%s], \"%s\")",
+    writefln("Test([%s], \"%s\"),",
         formatHexBytes(bytes, "0x", ", "), instr.getMnemonicAndOperandsString(Operand.Fmt.CANONICAL));
 }
 
@@ -23,6 +24,7 @@ struct Test {
 }
 
 __gshared const Test[] TESTS = [
+    Test([            0x00, 0x00], "add byte ptr [RAX], AL"),
     Test([            0x03, 0xc1], "add EAX, ECX"),
     Test([      0x48, 0x03, 0xc1], "add RAX, RCX"),
     Test([      0x48, 0x03, 0xc8], "add RCX, RAX"),
@@ -52,6 +54,7 @@ __gshared const Test[] TESTS = [
     Test([            0x0f, 0x85, 0x00, 0x00, 0x00, 0x00], "jne [RIP+00000000h]"),
     Test([            0x0f, 0x87, 0x00, 0x00, 0x00, 0x00], "ja [RIP+00000000h]"),
     Test([            0x0f, 0x94, 0xc0], "sete AL"),
+    Test([            0x0f, 0x94, 0xc1], "sete CL"),
     Test([            0x0f, 0x94, 0xc3], "sete BL"),
     Test([            0x0f, 0x95, 0xc0], "setne AL"),
     Test([            0x0f, 0xa2], "cpuid"),
@@ -102,6 +105,7 @@ __gshared const Test[] TESTS = [
     Test([            0x53], "push RBX"), // implied 64 bit
     Test([      0x40, 0x53], "push RBX"),
     Test([            0x55], "push RBP"),
+    Test([      0x40, 0x55], "push RBP"),
     Test([            0x56], "push RSI"),
     Test([      0x41, 0x56], "push R14"),
     Test([            0x57], "push RDI"),
@@ -220,7 +224,8 @@ __gshared const Test[] TESTS = [
     Test([      0x48, 0x8b, 0x01], "mov RAX, qword ptr [RCX]"),
     Test([      0x48, 0x8b, 0x03], "mov RAX, qword ptr [RBX]"),
     Test([      0x44, 0x8b, 0x05, 0x00, 0x00, 0x00, 0x00], "mov R8D, dword ptr [RIP+00000000h]"),
-    Test([      0x65, 0x48, 0x8b, 0x04, 0x25, 0x00, 0x00, 0x00, 0x00], "mov RAX, qword ptr GS:[00000000h]"),
+    Test([            0x8b, 0x08], "mov ECX, dword ptr [RAX]"),
+    Test([0x65, 0x48, 0x8b, 0x04, 0x25, 0x00, 0x00, 0x00, 0x00], "mov RAX, qword ptr GS:[00000000h]"),
     Test([      0x48, 0x8b, 0x05, 0x00, 0x00, 0x00, 0x00], "mov RAX, qword ptr [RIP+00000000h]"),
     Test([            0x8b, 0x05, 0x00, 0x00, 0x00, 0x00], "mov EAX, dword ptr [RIP+00000000h]"),
     Test([      0x48, 0x8b, 0x08], "mov RCX, qword ptr [RAX]"),
@@ -248,6 +253,7 @@ __gshared const Test[] TESTS = [
     Test([      0x48, 0x8b, 0xb3, 0x00, 0x00, 0x00, 0x00], "mov RSI, qword ptr [RBX+00000000h]"),
     Test([      0x4c, 0x8b, 0xc0], "mov R8, RAX"),
     Test([            0x8b, 0xc0], "mov EAX, EAX"),
+    Test([            0x8b, 0xc1], "mov EAX, ECX"),
     Test([      0x44, 0x8b, 0xc1], "mov R8D, ECX"),
     Test([      0x48, 0x8b, 0xc1], "mov RAX, RCX"),
     Test([      0x4c, 0x8b, 0xc1], "mov R8, RCX"),
@@ -266,6 +272,7 @@ __gshared const Test[] TESTS = [
     Test([      0x48, 0x8b, 0xcb], "mov RCX, RBX"),
     Test([      0x48, 0x8b, 0xce], "mov RCX, RSI"),
     Test([      0x49, 0x8b, 0xce], "mov RCX, R14"),
+    Test([      0x48, 0x8b, 0xd1], "mov RDX, RCX"),
     Test([      0x44, 0x8b, 0xd2], "mov R10D, EDX"),
     Test([      0x48, 0x8b, 0xd3], "mov RDX, RBX"),
     Test([            0x8b, 0xd5], "mov EDX, EBP"),
@@ -277,6 +284,7 @@ __gshared const Test[] TESTS = [
     Test([      0x48, 0x8b, 0xd8], "mov RBX, RAX"),
     Test([      0x44, 0x8b, 0xdb], "mov R11D, EBX"),
     Test([            0x8b, 0xeb], "mov EBP, EBX"),
+    Test([      0x48, 0x8b, 0xea], "mov RBP, RDX"),
     Test([      0x48, 0x8b, 0xec], "mov RBP, RSP"),
     Test([      0x44, 0x8b, 0xf0], "mov R14D, EAX"),
     Test([      0x48, 0x8b, 0xf0], "mov RSI, RAX"),
@@ -367,4 +375,5 @@ __gshared const Test[] TESTS = [
     Test([            0xff, 0x25, 0x00, 0x00, 0x00, 0x00], "jmp qword ptr [RIP+00000000h]"),
     Test([            0xff, 0xc7], "inc EDI"),
     Test([            0xff, 0xc8], "dec EAX"),
+    Test([            0xff, 0xe0], "jmp RAX")
 ];

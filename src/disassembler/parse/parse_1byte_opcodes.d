@@ -3,6 +3,11 @@ module disassembler.parse.parse_1byte_opcodes;
 import disassembler.all;
 
 void parseOneByteOpcode(Parser p, uint byte1) {
+    if(byte1==0x90 && p.prefix.rep) {
+        p.instr.copy(Instruction("pause", ps_none));    /* spin lock hint */
+        return;
+    }
+
     if(INSTRUCTIONS.length>byte1) {
         p.instr.copy(INSTRUCTIONS[byte1]);
     }

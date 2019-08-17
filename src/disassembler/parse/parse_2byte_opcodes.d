@@ -16,6 +16,13 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
                 case 0x1:
                     group7(p);
                     break;
+                case 0x9:
+                    if(p.prefix.rep) { /* F3 */
+                        p.instr.copy(Instruction("wbinvd", ps_none));
+                    } else {
+                        p.instr.copy(Instruction("wbnoinvd", ps_none));
+                    }
+                    break;
                 case 0xD:
                     groupP(p);
                     break;
@@ -41,6 +48,12 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
                 p.instr.copy(INSTRUCTIONS_row_1_66[loNibble]);
             } else {
                 /* no prefix */
+                auto modrm = ModRM(p.peekByte());
+                if(modrm.mod==0b11) {
+                    /* Special cases if mod==0b11 */
+                    if(loNibble==2) { p.instr.copy(Instruction("movhlps", ps_VoqUoq, 0, IS.SSE)); return; }
+                    else if(loNibble==6) { p.instr.copy(Instruction("movlhps", ps_VoqUoq, 0, IS.SSE)); return; }
+                }
                 p.instr.copy(INSTRUCTIONS_row_1[loNibble]);
             }
             break;
@@ -168,7 +181,8 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
             } else if(p.prefix.repne) {
                 /* F2 */
                 if(loNibble==0x0) p.instr.copy(Instruction("addsubps", ps_VpsWps, 0, IS.SSE3));
-                else if(loNibble==0x6) p.instr.copy(Instruction("movqdq2q", ps_PqUq));
+                else if(loNibble==0x6) p.instr.copy(Instruction("movdq2q", ps_PqUq, 0, IS.MMX));
+
             } else if(p.prefix.opSize) {
                 /* 66 */
                 p.instr.copy(INSTRUCTIONS_row_D_66[loNibble]);
@@ -216,7 +230,7 @@ __gshared Instruction[] INSTRUCTIONS_row_0 = [
     Instruction("clts", ps_none),       /* lo=6 */
     Instruction("sysret", ps_none),     /* lo=7 */
     Instruction("invd", ps_none),       /* lo=8 */
-    Instruction("wbinvd", ps_none),     /* lo=9 - wbnoinvd id prefix F3 */
+    Instruction("", null),              /* lo=9 - handled in code */
     Instruction("", null),              /* lo=A - invalid */
     Instruction("ud2", ps_none),        /* lo=B */
     Instruction("", null),              /* lo=C - invalid */
@@ -475,7 +489,7 @@ __gshared Instruction[] INSTRUCTIONS_row_5_F3 = [
     Instruction("addss", ps_VssWss, 0, IS.SSE),     /* lo=8 */
     Instruction("mulss", ps_VssWss, 0, IS.SSE),     /* lo=9 */
     Instruction("cvtss2sd", ps_VssWss, 0, IS.SSE2), /* lo=A */
-    Instruction("cvtps2dq", ps_VoWps),              /* lo=B */
+    Instruction("cvttps2dq", ps_VoWps, 0, IS.SSE2), /* lo=B */
     Instruction("subss", ps_VssWss, 0, IS.SSE),     /* lo=C */
     Instruction("minss", ps_VssWss, 0, IS.SSE),     /* lo=D */
     Instruction("divss", ps_VssWss, 0, IS.SSE),     /* lo=E */
