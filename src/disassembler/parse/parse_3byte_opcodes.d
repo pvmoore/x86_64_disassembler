@@ -2,7 +2,7 @@ module disassembler.parse.parse_3byte_opcodes;
 
 import disassembler.all;
 
-void threeByteOpcode(Parser p, uint byte1, uint byte2) {
+void parseThreeByteOpcode(Parser p, uint byte1, uint byte2) {
     assert(byte1 == 0x0F);
     assert(byte2 == 0x38 || byte2 == 0x3A);
 

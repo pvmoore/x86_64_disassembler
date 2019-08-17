@@ -21,7 +21,10 @@ import disassembler.sib;
 
 import disassembler.emit.html.all;
 
+import disassembler.parse.parse_1byte_opcodes;
+import disassembler.parse.parse_2byte_opcodes;
 import disassembler.parse.parse_3byte_opcodes;
+import disassembler.parse.parse_3dnow;
 import disassembler.parse.parse_fpu;
 import disassembler.parse.parse_groups;
 import disassembler.parse.parser;
@@ -33,8 +36,6 @@ import disassembler.parse.strategy;
 import disassembler.util;
 
 import disassembler.instructions.instruction;
-import disassembler.instructions.onebyte;
-import disassembler.instructions.twobytes;
 import disassembler.instructions.threebytes;
 
 enum chatty = true;

@@ -1,6 +1,13 @@
-module disassembler.instructions.onebyte;
+module disassembler.parse.parse_1byte_opcodes;
 
 import disassembler.all;
+
+void parseOneByteOpcode(Parser p, uint byte1) {
+    if(INSTRUCTIONS.length>byte1) {
+        p.instr.copy(INSTRUCTIONS[byte1]);
+    }
+    else assert(false);
+}
 
 __gshared Instruction[] INSTRUCTIONS = [
     Instruction("add", ps_EbGb),        /* 00 */

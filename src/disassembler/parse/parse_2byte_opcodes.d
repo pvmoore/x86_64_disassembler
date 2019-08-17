@@ -1,6 +1,209 @@
-module disassembler.instructions.twobytes;
+module disassembler.parse.parse_2byte_opcodes;
 
 import disassembler.all;
+
+void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
+
+    uint hiNibble = (byte2 >>> 4) & 0b1111;
+    uint loNibble = byte2 & 0b1111;
+
+    switch(hiNibble) {
+        case 0x0:
+            switch(loNibble) {
+                case 0x0:
+                    group6(p);
+                    break;
+                case 0x1:
+                    group7(p);
+                    break;
+                case 0xD:
+                    groupP(p);
+                    break;
+                case 0xF:
+                    parse3dnow(p, loNibble);
+                    break;
+                default:
+                    p.instr.copy(INSTRUCTIONS_row_0[loNibble]);
+                    break;
+            }
+            break;
+        case 0x1:
+            if(loNibble==8) {
+                group16(p);
+            } else if(p.prefix.rep) {
+                /* F3 */
+                p.instr.copy(INSTRUCTIONS_row_1_F3[loNibble]);
+            } else if(p.prefix.repne) {
+                /* F2 */
+                p.instr.copy(INSTRUCTIONS_row_1_F2[loNibble]);
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_1_66[loNibble]);
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_1[loNibble]);
+            }
+            break;
+        case 0x2:
+            if(p.prefix.rep) {
+                /* F3 */
+                p.instr.copy(INSTRUCTIONS_row_2_F3[loNibble]);
+            } else if(p.prefix.repne) {
+                /* F2 */
+                p.instr.copy(INSTRUCTIONS_row_2_F2[loNibble]);
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_2_66[loNibble]);
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_2[loNibble]);
+            }
+            break;
+        case 0x3:
+            p.instr.copy(INSTRUCTIONS_row_3[loNibble]);
+            break;
+        case 0x4:
+            p.instr.copy(INSTRUCTIONS_row_4[loNibble]);
+            break;
+        case 0x5:
+            if(p.prefix.rep) {
+                /* F3 */
+                p.instr.copy(INSTRUCTIONS_row_5_F3[loNibble]);
+            } else if(p.prefix.repne) {
+                /* F2 */
+                p.instr.copy(INSTRUCTIONS_row_5_F2[loNibble]);
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_5_66[loNibble]);
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_5[loNibble]);
+            }
+            break;
+        case 0x6:
+            if(p.prefix.rep) {
+                /* F3 */
+                if(loNibble==0xF) p.instr.copy(Instruction("movdqu", ps_VoWo));
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_6_66[loNibble]);
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_6[loNibble]);
+            }
+            break;
+        case 0x7:
+            if(loNibble==1) group12(p);
+            else if(loNibble==2) group13(p);
+            else if(loNibble==3) group14(p);
+            else if(p.prefix.rep) {
+                /* F3 */
+                p.instr.copy(INSTRUCTIONS_row_7_F3[loNibble]);
+            } else if(p.prefix.repne) {
+                /* F2 */
+                p.instr.copy(INSTRUCTIONS_row_7_F2[loNibble]);
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                if(loNibble==8) group17(p);
+                else p.instr.copy(INSTRUCTIONS_row_7_66[loNibble]);
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_7[loNibble]);
+            }
+            break;
+        case 0x8:
+            p.instr.copy(INSTRUCTIONS_row_8[loNibble]);
+            break;
+        case 0x9:
+            p.instr.copy(INSTRUCTIONS_row_9[loNibble]);
+            break;
+        case 0xA:
+            if(loNibble==0xE) {
+                group15(p);
+            } else {
+                p.instr.copy(INSTRUCTIONS_row_A[loNibble]);
+            }
+            break;
+        case 0xB:
+            if(p.prefix.rep) {
+                /* F3 */
+                if(loNibble==0x8) p.instr.copy(Instruction("popcnt", ps_GvEv, 0, IS.SSE4_2));
+                else if(loNibble==0xC) p.instr.copy(Instruction("tzcnt", ps_GvEv));
+                else if(loNibble==0xD) p.instr.copy(Instruction("lzcnt", ps_GvEv));
+            } else if(loNibble==0x09) {
+                group10(p);
+            } else if(loNibble==0x0a) {
+                group8(p);
+            } else {
+                p.instr.copy(INSTRUCTIONS_row_B[loNibble]);
+            }
+            break;
+        case 0xC:
+            if(loNibble==0x7) {
+                group9(p);
+            } else if(p.prefix.rep && loNibble==0x2) {
+                /* F3 */
+                p.instr.copy(Instruction("cmpss", ps_VssWssIb, 0, IS.SSE));
+            } else if(p.prefix.repne && loNibble==0x2) {
+                /* F2 */
+                p.instr.copy(Instruction("cmpsd", ps_VsdWsdIb));
+            } else if(p.prefix.opSize && loNibble.isOneOf(2,4,5,6)) {
+                /* 66 */
+                switch(loNibble) {
+                    case 2: p.instr.copy(Instruction("cmppd", ps_VpdWpdIb)); break;
+                    case 4: p.instr.copy(Instruction("pinsrw", ps_VoEwIb)); break;
+                    case 5: p.instr.copy(Instruction("pextrw", ps_GdUoIb)); break;
+                    case 6: p.instr.copy(Instruction("shufpd", ps_VpdWpdIb)); break;
+                    default: break;
+                }
+            } else {
+                /* no prefix */
+                p.instr.copy(INSTRUCTIONS_row_C[loNibble]);
+            }
+            break;
+        case 0xD:
+            if(p.prefix.rep) {
+                /* F3 */
+                if(loNibble==0x6) p.instr.copy(Instruction("movq2dq", ps_VoNq));
+            } else if(p.prefix.repne) {
+                /* F2 */
+                if(loNibble==0x0) p.instr.copy(Instruction("addsubps", ps_VpsWps, 0, IS.SSE3));
+                else if(loNibble==0x6) p.instr.copy(Instruction("movqdq2q", ps_PqUq));
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_D_66[loNibble]);
+            } else {
+                p.instr.copy(INSTRUCTIONS_row_D[loNibble]);
+            }
+            break;
+        case 0xE:
+            if(p.prefix.rep) {
+                /* F3 */
+                if(loNibble==0x6) p.instr.copy(Instruction("cvtdq2pd", ps_VpdWpj));
+            } else if(p.prefix.repne) {
+                /* F2 */
+                if(loNibble==0x6) p.instr.copy(Instruction("cvtpd2dq", ps_VpjWpd));
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_E_66[loNibble]);
+            } else {
+                p.instr.copy(INSTRUCTIONS_row_E[loNibble]);
+            }
+            break;
+        case 0xF:
+            if(p.prefix.repne) {
+                /* F2 */
+                if(loNibble==0x0) p.instr.copy(Instruction("lddqu", ps_VoMo, 0, IS.SSE3));
+            } else if(p.prefix.opSize) {
+                /* 66 */
+                p.instr.copy(INSTRUCTIONS_row_F_66[loNibble]);
+            } else {
+                p.instr.copy(INSTRUCTIONS_row_F[loNibble]);
+            }
+            break;
+        default: break;
+    }
+}
 
 /* row 0 */
 __gshared Instruction[] INSTRUCTIONS_row_0 = [
@@ -627,5 +830,3 @@ __gshared Instruction[] INSTRUCTIONS_B_grp8 = [
     Instruction("btr", ps_EvIb),   /* reg=6 */
     Instruction("btc", ps_EvIb),   /* reg=7 */
 ];
-
-/* group 16 */
