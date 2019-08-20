@@ -28,7 +28,7 @@ span {
 
     overflow-y: scroll;
 
-    grid-template-columns: 8fr 3fr 10fr 10fr;
+    grid-template-columns: 8fr 3fr 12fr 10fr;
 
     grid-column-gap: 15px;
 }

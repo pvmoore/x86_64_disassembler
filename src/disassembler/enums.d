@@ -97,6 +97,8 @@ bool isReg(string s) {
     return false;
 }
 
+enum Nibble : uint { _00=0, _01, _02, _03, _04, _05, _06, _07, _08, _09, _0A, _0B, _0C, _0D, _0E, _0F }
+
 
 /*
     Note: AH could be SPL, CH could be BPL, DH could be SIL and BH could be DIL
@@ -146,3 +148,20 @@ __gshared immutable RegD = [
 __gshared immutable RegT = [
 	Reg.TR0, Reg.TR1, Reg.TR2, Reg.TR3, Reg.TR4, Reg.TR5, Reg.TR6, Reg.TR7
 ];
+
+string toString(immutable(Reg)* ptr) {
+    return
+        ptr==RegC.ptr ? "RegC" :
+        ptr==RegD.ptr ? "RegD" :
+        ptr==RegT.ptr ? "RegT" :
+        ptr==Reg8.ptr ? "Reg8" :
+        ptr==Reg8_rex.ptr ? "Reg8_rex" :
+        ptr==Reg16.ptr ? "Reg16" :
+        ptr==Reg32.ptr ? "Reg32" :
+        ptr==Reg64.ptr ? "Reg64" :
+        ptr==RegSeg.ptr ? "RegSeg" :
+        ptr==RegMMX.ptr ? "RegMMX" :
+        ptr==RegXMM.ptr ? "RegXMM" :
+        ptr==RegYMM.ptr ? "RegYMM" :
+        "???";
+}

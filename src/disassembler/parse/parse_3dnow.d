@@ -12,3 +12,5 @@ void parse3dnow(Parser p, uint loNibble) {
     }
     todo();
 }
+
+private:

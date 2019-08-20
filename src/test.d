@@ -10,7 +10,8 @@ import disassembler.util;
 void main(string[] args) {
     writefln("Testing...");
 
-    auto filename = "test/test.exe";
+    //auto filename = "test/test.exe";
+    auto filename = "test/test1.exe";
 
     auto pe = new PE(filename);
 
@@ -19,8 +20,9 @@ void main(string[] args) {
 
     auto dis = new Disassembler();
 
-    //auto instructions = dis.processAll(code[76880..$]);
-    auto instructions = dis.processAll(code, 4096, pe.getCodeBase());
+
+    auto entry = pe.getEntryPoint() - pe.getCodeBase();
+    auto instructions = dis.processAll(code, 0, pe.getCodeBase());
 
     writefln("Instructions:");
     foreach(i; instructions) {
@@ -49,9 +51,9 @@ void testing() {
     asm {
         push RAX;
 
-        movhlps XMM1, XMM2;
-
-
+        lea RAX, mem;
+        vmovups XMM3, [RAX];
+        vmovups YMM3, [RAX];
 
         pop RAX;
     }

@@ -66,8 +66,29 @@ public:
     ubyte peekByte(int offset = 0) {
         return bytes.peek!ubyte(offset);
     }
+    bool hasRex() {
+        return prefix.hasRexBits;
+    }
     bool isAVX() {
         return prefix.hasVexBits;
+    }
+    uint avxR() {
+        if(!prefix.hasVexBits) return 0;
+        return instr.avx.R^1;
+    }
+    uint avxB() {
+        if(!prefix.hasVexBits) return 0;
+        return instr.avx.B^1;
+    }
+    uint avxX() {
+        if(!prefix.hasVexBits) return 0;
+        return instr.avx.X^1;
+    }
+    uint avxW() {
+        return instr.avx.X;
+    }
+    uint avxL() {
+        return instr.avx.L;
     }
     void addJumpTarget(int ripOffset) {
         auto currentOffset = cast(int)(bytes.position+codeBase);

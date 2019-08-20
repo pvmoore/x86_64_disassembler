@@ -14,6 +14,8 @@ void parseOneByteOpcode(Parser p, uint byte1) {
     else assert(false);
 }
 
+private:
+
 __gshared Instruction[] INSTRUCTIONS = [
     Instruction("add", ps_EbGb),        /* 00 */
     Instruction("add", ps_EvGv),        /* 01 */

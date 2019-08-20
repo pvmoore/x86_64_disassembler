@@ -5,13 +5,14 @@ import disassembler.all;
  * 	See AMD64 Architecture Programmer's Manual Volume 3 - Page 534
  *
  *
- *
  */
 void parseModrmSib(Parser p,
-				   uint op1Size, uint op2Size,
-				   Operand* op1 = null, Operand* op2 = null)
+				   Operand* op1,
+				   Operand* op2,
+				   CodeAndSub op1Code,
+				   CodeAndSub op2Code = CodeAndSub(Code.none, Sub.none))
 {
-	auto modrm = ModRM(p.readByte(), p.prefix);
+	auto modrm = ModRM(p.readByte(), p);
 
 	p.instr.modrm    = modrm;
 	p.instr.hasModrm = true;
@@ -19,16 +20,16 @@ void parseModrmSib(Parser p,
 	if(modrm.mod==0b11) {
 		/* reg, reg */
 
-		*op1 = new RegOperand(reg(modrm.rm, op1Size, p.prefix.hasRexBits));
+		*op1 = new RegOperand(getReg(p, modrm.rm, op1Code));
 
 		if(op2) {
-			*op2 = new RegOperand(reg(modrm.reg, op2Size, p.prefix.hasRexBits));
+			*op2 = new RegOperand(getReg(p, modrm.reg, op2Code));
 		}
 
 		return;
 	}
 
-	/* one side is memory and the other is a reg */
+	/* One side is memory and the other is a reg */
 
 	if(modrm.mod==0b00 && (modrm.rm&0b111)==0b101) {
 		/* RIP */
@@ -39,14 +40,14 @@ void parseModrmSib(Parser p,
 
 		*op1 = new RIPOperand(p.instr.getAddressSize()==64 ? Reg.RIP : Reg.EIP, disp32);
 		if(op2) {
-			*op2 = new RegOperand(reg(modrm.reg, op2Size, p.prefix.hasRexBits));
+			*op2 = new RegOperand(getReg(p, modrm.reg, op2Code));
 		}
 		return;
 	}
 
 	if(modrm.rm==0b100) {
 		/* SIB */
-		SIB sib 	   = SIB(p.readByte(), p.prefix);
+		SIB sib 	   = SIB(p.readByte(), p);
 		p.instr.sib    = sib;
 		p.instr.hasSib = true;
 
@@ -72,13 +73,13 @@ void parseModrmSib(Parser p,
 			p.instr.displacement = Displacement(disp, 32);
 		}
 
-		auto base  = hasBase ? reg(sib.base, 64) : Reg.NONE;
-		auto index = hasIndex ? reg(sib.index, 64) : Reg.NONE;
+		auto base  = hasBase ? getReg(p, sib.base) : Reg.NONE;
+		auto index = hasIndex ? getReg(p, sib.index) : Reg.NONE;
 
 		*op1 = new SIBOperand(base, index, p.prefix.segreg, sib.scale, disp, dispNumBits);
 
 		if(op2) {
-			*op2 = new RegOperand(reg(modrm.reg, op2Size, p.prefix.hasRexBits));
+			*op2 = new RegOperand(getReg(p, modrm.reg, op2Code));
 		}
 
 		return;
@@ -103,24 +104,9 @@ void parseModrmSib(Parser p,
 		p.instr.displacement = Displacement(disp, 32);
 	}
 
-	*op1 = new RegIndexOperand(reg(modrm.rm, 64), disp, dispNumBits);
+	*op1 = new RegIndexOperand(getReg(p, modrm.rm), disp, dispNumBits);
 
 	if(op2) {
-		*op2 = new RegOperand(reg(modrm.reg, op2Size, p.prefix.hasRexBits));
-	}
-}
-
-
-Reg reg(uint index, uint regSize, bool rex = false) {
-	switch(regSize) {
-		case 256: return RegYMM[index];
-		case 128: return RegXMM[index];
-		case 64: return Reg64[index];
-		case 32: return Reg32[index];
-		case 16: return Reg16[index];
-		case 8:
-			if(rex) return Reg8_rex[index];
-			return Reg8[index];
-		default: assert(false);
+		*op2 = new RegOperand(getReg(p, modrm.reg, op2Code));
 	}
 }

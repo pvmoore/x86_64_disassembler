@@ -2,6 +2,9 @@ module disassembler.parse.parse_prefix;
 
 import disassembler.all;
 
+/**
+ *  Up to 4 prefix bytes are possible.
+ */
 void parsePrefix(Parser p) {
 
     p.prefix = Prefix.init;
@@ -66,6 +69,9 @@ void parsePrefix(Parser p) {
 
         /* Consume the byte */
         p.prefix.bytes ~= p.readByte();
+
+        /* Stop after we find a VEX prefix */
+        if(p.prefix.hasVexBits) return;
     }
     assert(false);
 }

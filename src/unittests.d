@@ -26,7 +26,7 @@ void doTests() {
         if(t.expected != actual) {
             writefln("FAIL - Test %s: expected '%s' got '%s'", i, t.expected, actual);
             writefln("code: %s", formatHexBytes(t.code));
-            return;
+            throw new Error("FAIL");
         }
 
         writefln("[%s] %s %s", i, formatHexBytes(t.code), actual);

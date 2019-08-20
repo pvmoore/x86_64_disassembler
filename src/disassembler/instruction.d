@@ -25,6 +25,7 @@ public:
     Prefix prefix;
     ModRM modrm;
     SIB sib;
+    AVX avx;
 
     string targetLabel;     // The label of the target instruction if this is a jmp or call
     string label;           // Unique label if this instruction is a jump target
@@ -55,13 +56,16 @@ public:
     void addOperand(Operand op) {
         this.ops ~= op;
     }
+    void insertOperandAt(uint index, Operand op) {
+        this.ops.insert(index, op);
+    }
 
     bool hasPrefix() const {
         return prefix.bytes.length > 0;
     }
     uint getOperandSize() const {
         if(fixedSize!=0) return fixedSize;
-        if(prefix.rexW()) return 64;
+        if(prefix.rexW() || avx.W) return 64;
         if(prefix.opSize) return 16;
         return 32;
     }

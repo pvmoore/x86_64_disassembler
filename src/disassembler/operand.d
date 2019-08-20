@@ -36,6 +36,7 @@ final class RegOperand : Operand {
         bool console = fmt==Fmt.CONSOLE || fmt==Fmt.CANONICAL;
         return console ? "%s".format(reg) : htmlRegString(reg);
     }
+    override string toString() { return "RegOperand(%s)".format(reg); }
 }
 
 //#########################################################################################

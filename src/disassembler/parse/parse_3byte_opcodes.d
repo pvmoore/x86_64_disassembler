@@ -172,6 +172,7 @@ void parseThreeByteOpcode(Parser p, uint byte1, uint byte2) {
     }
 }
 
+private:
 
 /* 0F, 38, hi nibble = 0, no prefix */
 __gshared Instruction[] INSTRUCTIONS_0F_38_0 = [

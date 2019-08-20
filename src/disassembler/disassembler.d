@@ -26,7 +26,7 @@ public:
 
             count++;
 
-            if(count==170) break;
+            if(count==95) break;
         }
 
         /* Set labels */

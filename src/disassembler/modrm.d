@@ -17,16 +17,14 @@ struct ModRM {
 		reg = (i >>> 3) & 0b111;
 		rm  = (i & 0b111);
 	}
-	this(uint i, ref Prefix p) {
+	this(uint i, Parser p) {
 		this(i);
 
-		reg |= (p.rexR()<<3);	// REX.R
-		// todo - VEX.R
-		// todo XOP.R
+		reg |= (p.prefix.rexR()<<3);	// REX.R
+		reg |= ((p.avxR())<<3);			// VEX.R
 
-		rm  |= (p.rexB()<<3);	// REX.B
-		// todo - VEX.B
-		// todo - XOP.B
+		rm  |= (p.prefix.rexB()<<3);	// REX.B
+		rm  |= ((p.avxB())<<3);			// VEX.B
 	}
 
 	string toString() const {

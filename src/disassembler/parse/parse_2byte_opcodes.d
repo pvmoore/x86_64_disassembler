@@ -117,11 +117,17 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
                 p.instr.copy(INSTRUCTIONS_row_7_F2[loNibble]);
             } else if(p.prefix.opSize) {
                 /* 66 */
-                if(loNibble==8) group17(p);
+                if(loNibble==0xE && p.prefix.rexW()) {
+                    p.instr.copy(Instruction("movq", ps_EyVy, 0, IS.SSE));
+                }
+                else if(loNibble==8) group17(p);
                 else p.instr.copy(INSTRUCTIONS_row_7_66[loNibble]);
             } else {
                 /* no prefix */
-                p.instr.copy(INSTRUCTIONS_row_7[loNibble]);
+                if(loNibble==0xE && p.prefix.rexW()) {
+                    p.instr.copy(Instruction("movq", ps_EyPy, 0, IS.MMX));
+                }
+                else p.instr.copy(INSTRUCTIONS_row_7[loNibble]);
             }
             break;
         case 0x8:
@@ -218,6 +224,8 @@ void parseTwoByteOpcode(Parser p, uint byte1, uint byte2) {
         default: break;
     }
 }
+
+private:
 
 /* row 0 */
 __gshared Instruction[] INSTRUCTIONS_row_0 = [

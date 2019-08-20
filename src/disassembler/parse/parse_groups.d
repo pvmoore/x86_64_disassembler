@@ -240,6 +240,8 @@ void groupP(Parser p) {
     p.instr.copy(Instruction("prefetch", ps_none));
 }
 
+private:
+
 /* group 1 */
 __gshared Instruction[] INSTRUCTIONS_80 = [
     Instruction("add", ps_EbIb),            /* 0x81 reg=0 */
