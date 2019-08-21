@@ -15,8 +15,6 @@ import disassembler.all;
         map 3 - 0F 3A 3-byte opcode map
 
     vvvv: Source or destination register selector, in ones’ complement format
-          Typically used to encode the 1st src operand, but dest for VPSLLDQ,
-          VPSRLDQ, VPSRLW, VPSRLD, VPSRLQ, VPSRAW, VPSRAD, VPSLLW, VPSLLD, and VPSLLQ
 
         0: XMM15/YMM15      8: XMM7/YMM7
         1: XMM14/YMM14      9: XMM6/YMM6
@@ -217,15 +215,158 @@ void page1(Parser p, ref AVX avx) {
             }
             break;
         case _06:
+            final switch(avx.pp) with(AVX.PP) {
+                case _0: break;
+                case _1:
+                    if(lo == 0xE) {
+                        if(avx.W) {
+                            p.instr.copy(Instruction("movq", ps_VoEy, 0, IS.AVX));
+                        } else {
+                            p.instr.copy(Instruction("movd", ps_VoEy, 0, IS.AVX));
+                        }
+                    } else {
+                        p.instr.copy(INSTRUCTIONS_page1_row6_pp1[lo]);
+                    }
+                    break;
+                case _2:
+                    if(lo==0xF) p.instr.copy(Instruction("vmovdqu", ps_VpqwxWpqwx, 0, IS.AVX));
+                    break;
+                case _3: break;
+            }
+            break;
         case _07:
-        case _08:
-        case _09:
+            final switch(avx.pp) with(AVX.PP) {
+                case _0:
+                    if(avx.L) {
+                        p.instr.copy(Instruction("vzeroall", ps_none, 0, IS.AVX));
+                    } else {
+                        p.instr.copy(Instruction("vzeroupper", ps_none, 0, IS.AVX));
+                    }
+                    break;
+                case _1:
+                    switch(lo) {
+                        case _01: vexGroup12(p, avx); break;
+                        case _02: vexGroup13(p, avx); break;
+                        case _03: vexGroup14(p, avx); break;
+                        case _0E:
+                            if(avx.W) {
+                                p.instr.copy(Instruction("movq", ps_EyVo, 0, IS.AVX));
+                            } else {
+                                p.instr.copy(Instruction("movd", ps_EyVo, 0, IS.AVX));
+                            }
+                            break;
+                        default: p.instr.copy(INSTRUCTIONS_page1_row7_pp1[lo]); break;
+                    }
+                    break;
+                case _2:
+                    switch(lo) {
+                        case _00: p.instr.copy(Instruction("vpshufhw", ps_VpwxWpwxIb, 0, IS.AVX)); break;
+                        case _0E: p.instr.copy(Instruction("vmovq", ps_VqWq, 0, IS.AVX)); break;
+                        case _0F: p.instr.copy(Instruction("vmovdqu", ps_WpqwxVpqwx, 0, IS.AVX)); break;
+                        default: break;
+                    }
+                    break;
+                case _3:
+                    switch(lo) {
+                        case _00: p.instr.copy(Instruction("vpshuflw", ps_VpwxWpwxIb, 0, IS.AVX)); break;
+                        case _0C: p.instr.copy(Instruction("vhaddps", ps_VpsxHpsxWpsx, 0, IS.AVX)); break;
+                        case _0D: p.instr.copy(Instruction("vhsubps", ps_VpsxHpsxWpsx, 0, IS.AVX)); break;
+                        default: break;
+                    }
+                    break;
+            }
+            break;
+        case _08: /* Nothing here */
+        case _09: /* Nothing here */
+            break;
         case _0A:
-        case _0B:
+            if(lo==_0E) vexGroup15(p, avx);
+            break;
+        case _0B: /* Nothing here */
+            break;
         case _0C:
+            if(lo==_02) {
+                /* Handle VCMPccXX */
+                ParseStrategy strategy;
+                string mnemonic;
+                final switch(avx.pp) with(AVX.PP) {
+                    case _0: strategy = cast(ParseStrategy)ps_VpdwHpsWpsIb; mnemonic = "vcmp%sps"; break;
+                    case _1: strategy = cast(ParseStrategy)ps_VpqwHpdWpdIb; mnemonic = "vcmp%spd"; break;
+                    case _2: strategy = cast(ParseStrategy)ps_VdHssWssIb; mnemonic = "vcmp%sss"; break;
+                    case _3: strategy = cast(ParseStrategy)ps_VqHsdWsdIb; mnemonic = "vcmp%ssd"; break;
+                }
+                p.instr.copy(Instruction(mnemonic, strategy, 0, IS.AVX));
+            } else {
+                if(avx.pp==AVX.PP._0 && lo==_06) {
+                    p.instr.copy(Instruction("vshufps", ps_VpsxHpsxWpsxIb, 0, IS.AVX));
+                } else if(avx.pp==AVX.PP._1) {
+                    if(lo==_04) {
+                        if(modrm.mod==0b11) {
+                            p.instr.copy(Instruction("vpinsrw", ps_VpwHpwRdIb, 0, IS.AVX));
+                        } else {
+                            p.instr.copy(Instruction("vpinsrw", ps_VpwHpwMwIb, 0, IS.AVX));
+                        }
+                    } else if(lo==_05) {
+                        p.instr.copy(Instruction("vpextrw", ps_GwUpwIb, 0, IS.AVX));
+                    } else if(lo==_06) {
+                        p.instr.copy(Instruction("vshufpd", ps_VpdxHpdxWpdxIb, 0, IS.AVX));
+                    }
+                }
+            }
+            break;
         case _0D:
+            final switch(avx.pp) with(AVX.PP) {
+                case _0: /* Nothing here */ break;
+                case _1: p.instr.copy(INSTRUCTIONS_page1_rowD_pp1[lo]); break;
+                case _2: /* Nothing here */ break;
+                case _3:
+                    if(lo==_00) {
+                        p.instr.copy(Instruction("vaddsubps", ps_VpsxHpsxWpsx, 0, IS.AVX));
+                    }
+                    break;
+            }
+            break;
         case _0E:
+            final switch(avx.pp) with(AVX.PP) {
+                case _0: /* Nothing here */ break;
+                case _1:
+                    if(lo==_07) {
+                        if(avx.L) {
+                            p.instr.copy(Instruction("vmovntdq", ps_MdoVdo, 0, IS.AVX));
+                        } else {
+                            p.instr.copy(Instruction("vmovntdq", ps_MoVo, 0, IS.AVX));
+                        }
+                    } else {
+                        p.instr.copy(INSTRUCTIONS_page1_rowE_pp1[lo]);
+                    }
+                    break;
+                case _2:
+                    if(lo==_06) {
+                        p.instr.copy(Instruction("vcvtdq2pd", ps_VpdxWpjx, 0, IS.AVX));
+                    }
+                    break;
+                case _3:
+                    if(lo==_06) {
+                        p.instr.copy(Instruction("vcvtpd2dq", ps_VpjxWpdx, 0, IS.AVX));
+                    }
+                    break;
+            }
+            break;
         case _0F:
+            final switch(avx.pp) with(AVX.PP) {
+                case _0: /* Nothing here */ break;
+                case _1: p.instr.copy(INSTRUCTIONS_page1_rowF_pp1[lo]); break;
+                case _2: /* Nothing here */ break;
+                case _3:
+                    if(lo==_00) {
+                        if(avx.L) {
+                            p.instr.copy(Instruction("vlddqu", ps_VdoMdo, 0, IS.AVX));
+                        } else {
+                            p.instr.copy(Instruction("vlddqu", ps_VoMo, 0, IS.AVX));
+                        }
+                    }
+                    break;
+            }
             break;
     }
     p.instr.avx = avx;
@@ -235,6 +376,21 @@ void page2(Parser p, ref AVX avx) {
 }
 void page3(Parser p, ref AVX avx) {
     // page 529
+}
+void vexGroup12(Parser p, ref AVX avx) {
+    todo();
+}
+void vexGroup13(Parser p, ref AVX avx) {
+    todo();
+}
+void vexGroup14(Parser p, ref AVX avx) {
+    todo();
+}
+void vexGroup15(Parser p, ref AVX avx) {
+    todo();
+}
+void vexGroup17(Parser p, ref AVX avx) {
+    todo();
 }
 
 private:
@@ -331,7 +487,7 @@ Instruction[] INSTRUCTIONS_page1_row5_pp2 = [
     Instruction("vcvtss2sd", ps_VoHoWss),       /* lo=A */
     Instruction("vcvttps2dq", ps_VpjxWpsx),     /* lo=B */
     Instruction("vsubss", ps_VssHssWss),        /* lo=C */
-    Instruction("vminss", ps_VssHssWss),        /* lo=D */ 
+    Instruction("vminss", ps_VssHssWss),        /* lo=D */
     Instruction("vdivss", ps_VssHssWss),        /* lo=E */
     Instruction("vmaxss", ps_VssHssWss),        /* lo=F */
 ];
@@ -353,6 +509,105 @@ Instruction[] INSTRUCTIONS_page1_row5_pp3 = [
     Instruction("vminsd", ps_VsdHsdWsd),        /* lo=D */
     Instruction("vdivsd", ps_VsdHsdWsd),        /* lo=E */
     Instruction("vmaxsd", ps_VsdHsdWsd),        /* lo=F */
+];
+/* page 1, row 6 */
+Instruction[] INSTRUCTIONS_page1_row6_pp1 = [
+    Instruction("vpunpcklbw", ps_VpbxHpbxWpbx),     /* lo=0 */
+    Instruction("vpunpcklwd", ps_VpwxHpwxWpwx),     /* lo=1 */
+    Instruction("vpunpckldq", ps_VpdwxHpdwxWpdwx),  /* lo=2 */
+    Instruction("vpacksswb", ps_VpkxHpixWpix),      /* lo=3 */
+    Instruction("vpcmpgtb", ps_VpbxHpkxWpkx),       /* lo=4 */
+    Instruction("vpcmpgtw", ps_VpwxHpixWpix),       /* lo=5 */
+    Instruction("vpcmpgtd", ps_VpdwxHpjxWpjx),      /* lo=6 */
+    Instruction("vpackuswb", ps_VpkxHpixWpix),      /* lo=7 */
+
+    Instruction("vpunpckhbw", ps_VpbxHpbxWpbx),     /* lo=8 */
+    Instruction("vpunpckhwd", ps_VpwxHpwxWpwx),     /* lo=9 */
+    Instruction("vpunpckhdq", ps_VpdwxHpdwxWpdwx),  /* lo=A */
+    Instruction("vpackssdw", ps_VpixHpjxWpjx),      /* lo=B */
+    Instruction("vpunpcklqdq", ps_VpqwxHpqwxWpqwx), /* lo=C */
+    Instruction("vpunpckhqdq", ps_VpqwxHpqwxWpqwx), /* lo=D */
+    Instruction("", null),                          /* lo=E - handled in code */
+    Instruction("vmovdqa", ps_VpqwxWpqwx),          /* lo=F */
+];
+/* page 1, row 7 */
+Instruction[] INSTRUCTIONS_page1_row7_pp1 = [
+    Instruction("vpshufd", ps_VpdwxWpdwxIb),        /* lo=0 */
+    Instruction("", null),                          /* lo=1 - VEX group 12 */
+    Instruction("", null),                          /* lo=2 - VEX group 13 */
+    Instruction("", null),                          /* lo=3 - VEX group 14 */
+    Instruction("vpcmpeqb", ps_VpbxHpkxWpkx),       /* lo=4 */
+    Instruction("vpcmpeqw", ps_VpwxHpixWpix),       /* lo=5 */
+    Instruction("vpcmpeqd", ps_VpdwxHpjxWpjx),      /* lo=6 */
+    Instruction("", null),                          /* lo=7 - invalid */
+
+    Instruction("", null),                          /* lo=8 - invalid */
+    Instruction("", null),                          /* lo=9 - invalid */
+    Instruction("", null),                          /* lo=A - invalid */
+    Instruction("", null),                          /* lo=B - invalid */
+    Instruction("vhaddpd", ps_VpdxHpdxWpdx),        /* lo=C */
+    Instruction("vhsubpd", ps_VpdxHpdxWpdx),        /* lo=D */
+    Instruction("", null),                          /* lo=E 0 handled in code */
+    Instruction("vmovdqa", ps_WpqwxVpqwx),          /* lo=F */
+];
+/* page 1, row D */
+Instruction[] INSTRUCTIONS_page1_rowD_pp1 = [
+    Instruction("vaddsubpd", ps_VpdxHpdxWpdx),   /* lo=0 */
+    Instruction("vpsrlw", ps_VpwxHpwxWx),        /* lo=1 */
+    Instruction("vpsrld", ps_VpdwxHpdwxWx),      /* lo=2 */
+    Instruction("vpsrlq", ps_VpqwxHpqwxWx),      /* lo=3 */
+    Instruction("vpaddq", ps_VpqHpqWpq),         /* lo=4 */
+    Instruction("vpmullw", ps_VpixHpixWpix),     /* lo=5 */
+    Instruction("vmovq", ps_WqVq),               /* lo=6 */
+    Instruction("vpmovmskb", ps_GyUpbx),         /* lo=7 */
+    Instruction("vpsubusb", ps_VpkxHpkxWpkx),    /* lo=8 */
+    Instruction("vpsubusw", px_VpixHpixWpix),    /* lo=9 */
+    Instruction("vpminub", px_VpkxHpkxWpkx),     /* lo=A */
+    Instruction("vpand", ps_VxHxWx),             /* lo=B */
+    Instruction("vpaddusb", px_VpkxHpkxWpkx),    /* lo=C */
+    Instruction("vpaddusw", px_VpixHpixWpix),    /* lo=D */
+    Instruction("vpmaxub", ps_VpkxHpkxWpkx),     /* lo=E */
+    Instruction("vpandn", ps_VxHxWx),            /* lo=F */
+];
+/* page 1, row E */
+Instruction[] INSTRUCTIONS_page1_rowE_pp1 = [
+    Instruction("vpavgb", ps_VpkxHpkxWpkx),     /* lo=0 */
+    Instruction("vpsraw", ps_VpwxHpwxWx),       /* lo=1 */
+    Instruction("vpsrad", ps_VpdwxHpdwxWx),     /* lo=2 */
+    Instruction("vpavgw", ps_VpixHpixWpix),     /* lo=3 */
+    Instruction("vpmulhuw", ps_VpiHpiWpi),      /* lo=4 */
+    Instruction("vpmulhw", ps_VpiHpiWpi),       /* lo=5 */
+    Instruction("vcvttpd2dq", ps_VpjxWpdx),     /* lo=6 */
+    Instruction("", null),                      /* lo=7 - handled in code */
+
+    Instruction("vpsubsb", ps_VpkxHpkxWpkx),    /* lo=8 */
+    Instruction("vpsubsw", ps_VpixHpixWpix),    /* lo=9 */
+    Instruction("vpminsw", ps_VpixHpixWpix),    /* lo=A */
+    Instruction("vpor", ps_VxHxWx),             /* lo=B */
+    Instruction("vpaddsb", ps_VpkxHpkxWpkx),    /* lo=C */
+    Instruction("vpaddsw", ps_VpixHpixWpix),    /* lo=D */
+    Instruction("vpmaxsw", ps_VpixHpixWpix),    /* lo=E */
+    Instruction("vpxor", ps_VxHxWx),            /* lo=F */
+];
+/* page 1, row F */
+Instruction[] INSTRUCTIONS_page1_rowF_pp1 = [
+    Instruction("", null),                      /* lo=0 - invalid */
+    Instruction("vpsllw", ps_VpwxHpwxWoqx),     /* lo=1 */
+    Instruction("vpslld", ps_VpdwxHpdwxWoqx),   /* lo=2 */
+    Instruction("vpsllq", ps_VpqwxHpqwxWoqx),   /* lo=3 */
+    Instruction("vpmuludq", ps_VpqxHpjxWpjx),   /* lo=4 */
+    Instruction("vpmaddwd", ps_VpjxHpixWpix),   /* lo=5 */
+    Instruction("vpsadbw", ps_VpixHpkxWpkx),    /* lo=6 */
+    Instruction("vmaskmovdqu", ps_VpbUpb),      /* lo=7 */
+
+    Instruction("vpsubb", ps_VpkxHpkxWpkx),     /* lo=8 */
+    Instruction("vpsubw", ps_VpixHpixWpix),     /* lo=9 */
+    Instruction("vpsubd", ps_VpjxHpjxWpjx),     /* lo=A */
+    Instruction("vpsubq", ps_VpqxHpqxWpqx),     /* lo=B */
+    Instruction("vpaddb", ps_VpkxHpkxWpkx),     /* lo=C */
+    Instruction("vpaddw", ps_VpixHpixWpix),     /* lo=D */
+    Instruction("vpaddd", ps_VpjxHpjxWpjx),     /* lo=E */
+    Instruction("", null),                      /* lo=F - invalid */
 ];
 }
 

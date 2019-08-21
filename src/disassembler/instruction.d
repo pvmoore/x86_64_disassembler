@@ -112,8 +112,13 @@ public:
             return "%s, %s, %s".format(ops[0].getFormatted(fmt),
                                        ops[1].getFormatted(fmt),
                                        ops[2].getFormatted(fmt));
+        } else if(ops.length==4) {
+            return "%s, %s, %s, %s".format(ops[0].getFormatted(fmt),
+                                           ops[1].getFormatted(fmt),
+                                           ops[2].getFormatted(fmt),
+                                           ops[3].getFormatted(fmt));
         }
-        assert(false, "handle ops.length>3");
+        assert(false, "handle ops.length>4");
     }
     string getMnemonicAndOperandsString(Operand.Fmt fmt) {
         auto ms = getMnemonicString();
@@ -124,6 +129,16 @@ public:
         string comment;
         if(hasPrefix()) {
             comment ~= "; %s".format(prefix.toString());
+
+            if(prefix.hasVexBits) {
+                comment ~= "(vex %s%s%s%s%s) ".format(
+                    avx.R ? "R" : ".",
+                    avx.X ? "X" : ".",
+                    avx.B ? "B" : ".",
+                    avx.W ? "W" : ".",
+                    avx.L ? "L" : "."
+                );
+            }
         }
         if(instructionSet!=IS.STD) {
             if(comment.length==0) comment ~= "; "; else comment ~= " ";

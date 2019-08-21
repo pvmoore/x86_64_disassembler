@@ -12,26 +12,36 @@ enum Sub {
 	o_q,	// upper/lower half of 128 bits --> 64 bits
 	q,		// 64-bit
 	p,		// 32-bit or 48-bit far pointer
+
 	pb,		// packed 8-bit
+	pw,		// packed 16-bit.
 	pdw,	// packed 32-bit (unsigned?)
+	pqw,	// packed 64-bit (unsigned?)
+
+	pk,		// packed 8-bit
 	pi,		// packed 16-bit
 	pj,		// packed 32-bit
-	pk,		// packed 8-bit
 	pq, 	// packed 64-bit
-	pqw,	// packed 64-bit (unsigned?)
-	pd,		// packed 64-bit
-	ps,		// packed 32-bit
-	pw,		// packed 16-bit.
-	sd,		// double-scalar
-	ss,		// single-scalar
+
+	pd,		// packed 64-bit (doubles)
+	ps,		// packed 32-bit (floats)
+	sd,		// scalar (double)
+	ss,		// scalar (float)
+
 	v,		// 16/32/64-bit depends on operand size
 	w,		// 16-bit
 	y,		// 32/64-bit depends on operand size
 	z,		// 16/32-bit depends on operand size
 
-	pdx,	// pd - 128/256 bit depending on VEX.L
-	psx,	// ps - 128/256 bit depending on VEX.L
-    pjx,    // pj - 128/256 bit depending on VEX.L
+	x,
+	pbx,	// pb  - 128/256 bit depending on VEX.L
+	pwx,	// pw  - 128/256 bit depending on VEX.L
+	pdwx,	// pdw - 128/256 bit depending on VEX.L
+	pdx,	// pd  - 128/256 bit depending on VEX.L
+	psx,	// ps  - 128/256 bit depending on VEX.L
+    pjx,    // pj  - 128/256 bit depending on VEX.L
+	pqwx,	// pqw - 128/256 bit depending on VEX.L
+	o_qx,	// o_q - 128/256 bit depending on VEX.L
 }
 Sub toSub(string ch) {
 	import std.traits : EnumMembers;
@@ -56,11 +66,22 @@ uint getSize(Sub s, Parser p) {
 		case Sub.o: return 128;
         case Sub.do_: return 256;
         case Sub.p: return p.prefix.opSize ? 32 : 48;
+		case Sub.pb:
+		case Sub.pw:
+		case Sub.pi:
         case Sub.ps:
         case Sub.pd:
+		case Sub.pq:
             return p.avxW() ? 256 : 128;
+		case Sub.x:
+		case Sub.pbx:
+		case Sub.pwx:
+		case Sub.pdwx:
         case Sub.psx:
         case Sub.pdx:
+		case Sub.pjx:
+		case Sub.pqwx:
+		case Sub.o_qx:
             return p.avxL() ? 256 : 128;
         case Sub.v: return p.instr.getOperandSize();
         case Sub.y: return maxOf(32, p.instr.getOperandSize());

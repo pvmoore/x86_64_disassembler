@@ -393,6 +393,63 @@ final class Voq : ParseStrategy {
 	}
 }
 
+final class VCMPccXX : ParseStrategy {
+	// VCMPccXX Strategy
+	ParseStrategy vhw;
+	this(const ParseStrategy vhw) { this.vhw = cast(ParseStrategy)vhw; }
+
+	void parse(Parser p) {
+		/* Handle the operands */
+		vhw.parse(p);
+
+		/* Read the Ib and set the mnemonic */
+		auto Ib = p.readByte();
+
+		string cond;
+		switch(Ib) {
+			case 0: cond = "eq"; break;
+			case 1: cond = "lt"; break;
+			case 2: cond = "le"; break;
+			case 3: cond = "unord"; break;
+			case 4: cond = "neq"; break;
+			case 5: cond = "nlt"; break;
+			case 6: cond = "nle"; break;
+			case 7: cond = "ord"; break;
+
+			case 8: cond = "eq_uq"; break;
+			case 9: cond = "nge"; break;
+			case 10: cond = "ngt"; break;
+			case 11: cond = "false"; break;
+			case 12: cond = "neq_oq"; break;
+			case 13: cond = "ge"; break;
+			case 14: cond = "gt"; break;
+			case 15: cond = "true"; break;
+
+			case 16: cond = "eq_os"; break;
+			case 17: cond = "lt_oq"; break;
+			case 18: cond = "le_oq"; break;
+			case 19: cond = "unord_s"; break;
+			case 20: cond = "neq_us"; break;
+			case 21: cond = "nlt_uq"; break;
+			case 22: cond = "nle_uq"; break;
+			case 23: cond = "ord_s"; break;
+
+			case 24: cond = "eq_us"; break;
+			case 25: cond = "nge_uq"; break;
+			case 26: cond = "ngt_uq"; break;
+			case 27: cond = "false_os"; break;
+			case 28: cond = "neq_os"; break;
+			case 29: cond = "ge_oq"; break;
+			case 30: cond = "gt_oq"; break;
+			case 31: cond = "true_us"; break;
+
+			default: cond = "???"; break;
+		}
+		/* mnemonic should be something like "vcmp%sps" */
+		p.instr.mnemonic = p.instr.mnemonic.format(cond);
+	}
+}
+
 
 
 

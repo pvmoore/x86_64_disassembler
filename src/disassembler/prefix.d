@@ -46,7 +46,6 @@ struct Prefix {
 		if(addrSize) s ~= "(67 addrSize) ";
 		if(lock) s ~= "(lock) ";
 		if(hasRexBits) s~="(rex %s%s%s%s) ".format(rexB()?"B":".", rexX()?"X":".", rexR()?"R":".", rexW()?"W":".");
-		if(hasVexBits) s~="(vex %s%s) ".format("", "");
 		if(hasXopBits) s~="(xop) ";
 		if(segreg!=Reg.NONE) s~="(%s)".format(segreg);
 
