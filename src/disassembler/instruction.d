@@ -16,8 +16,8 @@ public:
     /* Copied state */
     ParseStrategy parseStrategy;
     string mnemonic;
-    uint fixedSize;
     IS instructionSet;
+    Hint[] hints;
     /* end of copied state */
 
     uint offset;
@@ -38,18 +38,22 @@ public:
 
     Operand[] ops;
 
-    this(string mnemonic, inout ParseStrategy parseStrategy, uint fixedSize = 0, IS instructionSet = IS.STD) {
+    this(string mnemonic,
+        inout ParseStrategy parseStrategy,
+        IS instructionSet,
+        Hint[] hints...)
+    {
         this.mnemonic       = mnemonic;
         this.parseStrategy  = cast(ParseStrategy)parseStrategy;
-        this.fixedSize      = fixedSize;
         this.instructionSet = instructionSet;
+        this.hints          = hints;
     }
 
     void copy(inout Instruction other) {
         this                = Instruction.init;
         this.mnemonic       = other.mnemonic;
         this.parseStrategy  = cast(ParseStrategy)other.parseStrategy;
-        this.fixedSize      = other.fixedSize;
+        this.hints          = cast(Hint[])other.hints;
         this.instructionSet = other.instructionSet;
 	}
 
@@ -64,7 +68,10 @@ public:
         return prefix.bytes.length > 0;
     }
     uint getOperandSize() const {
-        if(fixedSize!=0) return fixedSize;
+        if(hints.hasHint(Hint.SIZE_64)) return 64;
+        if(hints.hasHint(Hint.SIZE_32)) return 32;
+        if(hints.hasHint(Hint.SIZE_16)) return 16;
+        if(hints.hasHint(Hint.SIZE_8)) return 8;
         if(prefix.rexW() || avx.W) return 64;
         if(prefix.opSize) return 16;
         return 32;

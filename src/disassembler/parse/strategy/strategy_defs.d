@@ -359,6 +359,15 @@ const ParseStrategy ps_VxMSTARqHpqwx    = ModRMSIB.avx("Vx", "MSTARq", "Hpqwx");
 const ParseStrategy ps_VxMSTARqHpqw     = ModRMSIB.avx("Vx", "MSTARq", "Hpqw");
 const ParseStrategy ps_VxMSTARpdHpdx    = ModRMSIB.avx("Vx", "MSTARpd", "Hpdx");
 const ParseStrategy ps_VoHoWo           = ModRMSIB.avx("Vo", "Ho", "Wo");
+const ParseStrategy ps_VdoHoWo          = ModRMSIB.avx("Vdo", "Ho", "Wo");
+const ParseStrategy ps_VpsxWpsxIb       = new Composite(ps_VpsxWpsx, ps_Ib);
+const ParseStrategy ps_VpdxWpdxIb       = new Composite(ps_VpdxWpdx, ps_Ib);
+const ParseStrategy ps_VssHssWssIb      = new Composite(ps_VssHssWss, ps_Ib);
+const ParseStrategy ps_VpwxHpwxWpwxIb   = new Composite(ps_VpwxHpwxWpwx, ps_Ib);
+const ParseStrategy ps_VpbxHpbxWpbxIb   = new Composite(ps_VpbxHpbxWpbx, ps_Ib);
+const ParseStrategy ps_VsdHsdWsdIb      = new Composite(ps_VsdHsdWsd, ps_Ib);
+const ParseStrategy ps_VpdwxHpdwxWpdwxIb= new Composite(ps_VpdwxHpdwxWpdwx, ps_Ib);
+const ParseStrategy ps_VdoHoWoIb        = new Composite(ps_VdoHoWo, ps_Ib);
 
 const ParseStrategy ps_UssHssVss	    = ModRMSIB.avx("Uss", "Hss", "Vss");
 const ParseStrategy ps_UsdHsdVsd	    = ModRMSIB.avx("Usd", "Hsd", "Vsd");
@@ -367,10 +376,6 @@ const ParseStrategy ps_WpsxVpsx         = ModRMSIB.avx("Wpsd", "Vpsx");
 const ParseStrategy ps_WpdxVpdx		    = ModRMSIB.avx("Wpdx", "Vpdx");
 const ParseStrategy ps_WpsxVpws 	    = ModRMSIB.avx("Wpsx", "Vpsx");
 const ParseStrategy ps_WpqwxVpqwx       = ModRMSIB.avx("Wpqwx", "Vpqwx");
-
-
-
-
 
 
 

@@ -2,6 +2,23 @@ module disassembler.enums;
 
 import disassembler.all;
 
+enum Hint : uint {
+    NONE = 0,    // No hint
+    SIZE_8,      // Use 8 bit
+    SIZE_16,     // Use 16 bit
+    SIZE_32,     // Use 32 bit
+    SIZE_64,     // Use 64 bit
+    PTR_SIZE_W,  // Ptr size is 128/256 bit
+}
+bool hasHint(inout Hint[] hints, Hint h) {
+    foreach(hint; hints) if(h==hint) return true;
+    return false;
+}
+Hint getPtrSizeHint(inout Hint[] hints) {
+    foreach(hint; hints) if(hint==Hint.PTR_SIZE_W) return hint;
+    return Hint.NONE;
+}
+
 // https://en.wikipedia.org/wiki/X86_instruction_listings
 enum IS : uint {
     /* x86_64 Standard Instructions */

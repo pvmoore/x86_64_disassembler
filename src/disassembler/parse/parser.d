@@ -36,6 +36,16 @@ public:
 
         instr.bytes = code[offset..bytes.position].dup;
 
+        /* Set the ptr size if this instruction has a ptr size that is not easy to determine */
+        auto ptrSizeHint = instr.hints.getPtrSizeHint();
+        if(ptrSizeHint!=Hint.NONE) {
+            // assume the hint is PTR_SIZE_W
+            uint size = instr.avx.L ? 256 : 128;
+            foreach(ref op; instr.ops) {
+                op.ptrSize = size;
+            }
+        }
+
         return instr;
     }
     bool eof() {

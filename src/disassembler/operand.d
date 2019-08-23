@@ -5,7 +5,7 @@ import disassembler.all;
 abstract class Operand {
 public:
     enum Fmt { CONSOLE, CANONICAL, HTML }
-    uint ptrSize;   // byte ptr etc
+    uint ptrSize;   // 'byte ptr' etc
     abstract string getFormatted(Fmt);
 protected:
     string ptrSizeString() {
