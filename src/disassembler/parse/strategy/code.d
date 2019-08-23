@@ -18,6 +18,7 @@ enum Code {
 	J,		// The instruction includes a relative offset that is added to the rIP
 	L,		// YMM/XMM register specified using the most-significant 4 bits of an 8-bit immediate value
 	M,		// A memory operand specified by the ModRM byte. ModRM.mod ≠ 11b
+	MSTAR,	// A sparse array of memory operands addressed using the VSIB addressing mode
 	N,		// 64-bit MMX reg (modrm.rm) - The ModRM.mod field must be 11b
 	P,		// 64-bit MMX reg (modrm.reg)
 	Q,		// 64-bit MMX reg or mem (modrm.rm)
@@ -27,11 +28,11 @@ enum Code {
 	V,		// YMM/XMM reg (modrm.reg) - The ModRM mod field must be 11b
 	W,	    // YMM/XMM reg or mem (modrm.rm)
 }
-Code toCode(char ch) {
+Code toCode(string ch) {
 	import std.traits : EnumMembers;
     foreach(e; EnumMembers!Code) {
         auto s = "%s".format(e);
-		if(s[0]==ch) return e;
+		if(s == ch) return e;
 	}
 	return Code.none;
 }
@@ -68,6 +69,7 @@ uint getSize(Code c, Parser p) {
 		case U:
 		case V:
 		case W:
+		case MSTAR:
 			return p.avxL() ? 256 : 128;
 
 		default: assert(false, "implement me %s".format(c));

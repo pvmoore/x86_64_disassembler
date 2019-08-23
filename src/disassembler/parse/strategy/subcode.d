@@ -22,6 +22,7 @@ enum Sub {
 	pi,		// packed 16-bit
 	pj,		// packed 32-bit
 	pq, 	// packed 64-bit
+	ph,		// packed 16-bit float
 
 	pd,		// packed 64-bit (doubles)
 	ps,		// packed 32-bit (floats)
@@ -38,6 +39,7 @@ enum Sub {
 	pwx,	// pw  - 128/256 bit depending on VEX.L
 	pdwx,	// pdw - 128/256 bit depending on VEX.L
 	pdx,	// pd  - 128/256 bit depending on VEX.L
+	phx,	// ph  - 128/256 bit depending on VEX.L
 	psx,	// ps  - 128/256 bit depending on VEX.L
     pjx,    // pj  - 128/256 bit depending on VEX.L
 	pqwx,	// pqw - 128/256 bit depending on VEX.L
@@ -52,8 +54,10 @@ Sub toSub(string ch) {
 	if(ch=="do") return Sub.do_;
 	return Sub.none;
 }
-uint getSize(Sub s, Parser p) {
+uint getRegSize(Sub s, Parser p) {
 	switch(s) {
+		case Sub.ph:
+			return 16;
         case Sub.b: return 8;
         case Sub.w: return 16;
         case Sub.d:
@@ -75,6 +79,7 @@ uint getSize(Sub s, Parser p) {
             return p.avxW() ? 256 : 128;
 		case Sub.x:
 		case Sub.pbx:
+		case Sub.phx:
 		case Sub.pwx:
 		case Sub.pdwx:
         case Sub.psx:
@@ -88,6 +93,55 @@ uint getSize(Sub s, Parser p) {
         case Sub.z: return minOf(32, p.instr.getOperandSize());
 
         case Sub.none: return 0;
+
+		default: assert(false, "implement me %s".format(s));
+	}
+}
+uint getMemSize(Sub s, Parser p) {
+	switch(s) {
+		case Sub.b:
+		case Sub.pb:
+			return 8;
+		case Sub.w:
+		case Sub.ph:
+		case Sub.pw:
+			return 16;
+        case Sub.d:
+        case Sub.ss:
+		case Sub.ps:
+		case Sub.pi:
+            return 32;
+        case Sub.sd:
+        case Sub.q:
+        case Sub.o_q:
+		case Sub.pd:
+		case Sub.pq:
+            return 64;
+		case Sub.o:
+			return 128;
+        case Sub.do_:
+			return 256;
+        case Sub.p:
+			return p.prefix.opSize ? 32 : 48;
+
+		case Sub.x:
+		case Sub.psx:
+		case Sub.pbx:
+		case Sub.pdx:
+		case Sub.o_qx:
+		case Sub.pqwx:
+		case Sub.pdwx:
+		case Sub.pjx:
+		case Sub.pwx:
+		case Sub.phx:
+			return p.avxL() ? 256 : 128;
+
+        case Sub.v: return p.instr.getOperandSize();
+        case Sub.y: return maxOf(32, p.instr.getOperandSize());
+        case Sub.z: return minOf(32, p.instr.getOperandSize());
+
+        case Sub.none:
+			return 0;
 
 		default: assert(false, "implement me %s".format(s));
 	}

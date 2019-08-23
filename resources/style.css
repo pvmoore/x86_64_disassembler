@@ -28,13 +28,14 @@ span {
 
     overflow-y: scroll;
 
-    grid-template-columns: 8fr 3fr 12fr 10fr;
+    grid-template-columns: 9fr 3fr 17fr 6fr;
 
     grid-column-gap: 15px;
 }
 .bytes {
     text-align: right;
     color: #888;
+    font-size:16px;
 }
 .pb {
 
@@ -59,6 +60,7 @@ span {
 }
 .comment {
     color: #777;
+    font-size:16px;
 }
 
 .label {

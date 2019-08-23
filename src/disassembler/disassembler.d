@@ -28,7 +28,7 @@ public:
 
             chat("%s", instr);
 
-            if(count==420) break;
+            if(count==440) break;
         }
 
         /* Set labels */

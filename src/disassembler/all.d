@@ -35,6 +35,10 @@ import disassembler.parse.parse_instruction;
 import disassembler.parse.parse_modrm_sib;
 import disassembler.parse.parse_prefix;
 import disassembler.parse.parse_avx;
+import disassembler.parse.parse_avx_page1;
+import disassembler.parse.parse_avx_page2;
+import disassembler.parse.parse_avx_page3;
+import disassembler.parse.parse_avx_groups;
 
 import disassembler.parse.strategy.code;
 import disassembler.parse.strategy.operand_info;

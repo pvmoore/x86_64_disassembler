@@ -165,7 +165,7 @@ public:
 
         string s = pre ~ offsetStr ~ " | " ~ getMnemonicAndOperandsString(Operand.Fmt.CONSOLE);
 
-        pad = ("%% %ss".format(100 - s.length)).format("");
+        pad = ("%% %ss".format(120 - s.length)).format("");
 
         return s ~ pad ~ suffix;
 	}

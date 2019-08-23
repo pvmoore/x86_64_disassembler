@@ -517,8 +517,15 @@ public final class ModRMSIB : ParseStrategy {
 		return new ModRMSIB([code1, code2], code3, op3Index, false);
 	}
 	static auto convert(string s) {
-		auto codeCh = s[0];
-		auto subCh  = s[1..$];
+		string codeCh;
+		string subCh;
+		if(s.startsWith("MSTAR")) {
+			codeCh = "MSTAR";
+			subCh  = s[5..$];
+		} else {
+			codeCh = s[0..1];
+		 	subCh  = s[1..$];
+		}
 		return CodeAndSub(codeCh.toCode(), subCh.toSub());
 	}
 	void parse(Parser p) {
@@ -526,11 +533,11 @@ public final class ModRMSIB : ParseStrategy {
 		Operand op1, op2;
 
 		//chat("%s --->", p.instr.mnemonic);
-		//chat("swap=%s %s", swap, p.instr.avx);
+		//chat("codes=%s swap=%s avx=%s rex=%s", codes, swap, p.instr.avx, p.prefix.rexBits);
 
 		parseModrmSib(p, &op2, &op1, codes[1], codes[0]);
 
-		//chat("---");
+		//chat("--- op1=%s", op1);
 
 		op2.ptrSize = getPtrSize(p, codes[0], codes[1]);
 

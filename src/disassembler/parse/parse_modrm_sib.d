@@ -16,6 +16,7 @@ void parseModrmSib(Parser p,
 
 	p.instr.modrm    = modrm;
 	p.instr.hasModrm = true;
+	//chat("modrm=%s", modrm);
 
 	if(modrm.mod==0b11) {
 		/* reg, reg */
@@ -73,8 +74,23 @@ void parseModrmSib(Parser p,
 			p.instr.displacement = Displacement(disp, 32);
 		}
 
-		auto base  = hasBase ? getReg(p, sib.base) : Reg.NONE;
-		auto index = hasIndex ? getReg(p, sib.index) : Reg.NONE;
+		Reg base;
+		Reg index;
+
+		if(op1Code.code==Code.MSTAR) {
+			/* VSIB
+			 * SS: scale factor = pow(2,SS)
+			 * index: specifies the XMM/YMM register that contains the packed array of index values
+			 * base: specifies the General Purpose Register
+			 */
+			assert(hasIndex);
+
+			base  = hasBase ? Reg64[sib.base] : Reg.NONE;
+			index = getReg(sib.index, p.instr.avx.L ? 256 : 128);
+		} else {
+			base  = hasBase ? getReg(p, sib.base) : Reg.NONE;
+			index = hasIndex ? getReg(p, sib.index) : Reg.NONE;
+		}
 
 		*op1 = new SIBOperand(base, index, p.prefix.segreg, sib.scale, disp, dispNumBits);
 

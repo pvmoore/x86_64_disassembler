@@ -11,7 +11,7 @@ void main(string[] args) {
     writefln("Testing...");
 
     //auto filename = "test/test.exe";
-    auto filename = "test/test1.exe";
+    auto filename = "test/test-avx.exe";
 
     auto pe = new PE(filename);
 

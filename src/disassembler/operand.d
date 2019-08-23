@@ -126,8 +126,6 @@ private:
     }
 }
 
-//#########################################################################################
-
 final class RIPOperand : Operand {
     Reg reg;
     int displacement;
