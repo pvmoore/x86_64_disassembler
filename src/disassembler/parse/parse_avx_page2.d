@@ -198,7 +198,7 @@ Instruction[] INSTRUCTIONS_page2_row1_pp1 = [
 
     Instruction("vbroadcastss", ps_VpsWss, IS.AVX),         /* lo=8 */
     Instruction("vbroadcastsd", ps_VpdWsd, IS.AVX),         /* lo=9 */
-    Instruction("vbroadcastssf128", ps_VdoMo, IS.AVX),      /* lo=A */
+    Instruction("vbroadcastf128", ps_VdoMo, IS.AVX),        /* lo=A */
     Instruction("", null, IS.STD),                          /* lo=B - invalid */
     Instruction("vpabsb", ps_VpkxWpkx, IS.AVX),             /* lo=C */
     Instruction("vpabsw", ps_VpixWpix, IS.AVX),             /* lo=D */

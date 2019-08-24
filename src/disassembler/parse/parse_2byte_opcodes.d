@@ -653,22 +653,22 @@ __gshared Instruction[] INSTRUCTIONS_row_9 = [
 ];
 /* row A */
 __gshared Instruction[] INSTRUCTIONS_row_A = [
-    Instruction("push FS",  ps_none, IS.STD, Hint.SIZE_64), /* lo=0 */
-    Instruction("pop FS", ps_none, IS.STD, Hint.SIZE_64),   /* lo=1 */
-    Instruction("cpuid",  ps_none, IS.STD),                 /* lo=2 */
-    Instruction("bt", ps_EvGv, IS.STD),                     /* lo=3 */
-    Instruction("shld",  ps_EvGvIb, IS.STD),                /* lo=4 */
-    Instruction("shld", ps_EvGvCL, IS.STD),                 /* lo=5 */
-    Instruction("", null, IS.STD),                          /* lo=6 - invalid */
-    Instruction("", null, IS.STD),                          /* lo=7 - invalid */
-    Instruction("push GS", ps_none, IS.STD, Hint.SIZE_64),  /* lo=8 */
-    Instruction("pop GS", ps_none,IS.STD, Hint.SIZE_64),    /* lo=9 */
-    Instruction("rsm",  ps_none, IS.STD),                   /* lo=A */
-    Instruction("bts", ps_EvGv, IS.STD),                    /* lo=B */
-    Instruction("shrd",  ps_EvGvIb, IS.STD),                /* lo=C */
-    Instruction("shrd", ps_EvGvCL, IS.STD),                 /* lo=D */
-    Instruction("", null, IS.STD),                          /* lo=E - group 15 */
-    Instruction("imul", ps_GvEv, IS.STD),                   /* lo=F */
+    Instruction("push FS",  ps_none, IS.STD, [Hint.SIZE_64]),   /* lo=0 */
+    Instruction("pop FS", ps_none, IS.STD, [Hint.SIZE_64]),     /* lo=1 */
+    Instruction("cpuid",  ps_none, IS.STD),                     /* lo=2 */
+    Instruction("bt", ps_EvGv, IS.STD),                         /* lo=3 */
+    Instruction("shld",  ps_EvGvIb, IS.STD),                    /* lo=4 */
+    Instruction("shld", ps_EvGvCL, IS.STD),                     /* lo=5 */
+    Instruction("", null, IS.STD),                              /* lo=6 - invalid */
+    Instruction("", null, IS.STD),                              /* lo=7 - invalid */
+    Instruction("push GS", ps_none, IS.STD, [Hint.SIZE_64]),    /* lo=8 */
+    Instruction("pop GS", ps_none,IS.STD, [Hint.SIZE_64]),      /* lo=9 */
+    Instruction("rsm",  ps_none, IS.STD),                       /* lo=A */
+    Instruction("bts", ps_EvGv, IS.STD),                        /* lo=B */
+    Instruction("shrd",  ps_EvGvIb, IS.STD),                    /* lo=C */
+    Instruction("shrd", ps_EvGvCL, IS.STD),                     /* lo=D */
+    Instruction("", null, IS.STD),                              /* lo=E - group 15 */
+    Instruction("imul", ps_GvEv, IS.STD),                       /* lo=F */
 ];
 /* row B without prefix bytes */
 __gshared Instruction[] INSTRUCTIONS_row_B = [

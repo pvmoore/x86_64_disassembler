@@ -2,7 +2,26 @@ module disassembler.parse.strategy.code;
 
 import disassembler.all;
 
-struct CodeAndSub { Code code; Sub sub; }
+struct CodeAndSub {
+	Code code;
+	Sub sub;
+	this(Code code, Sub sub) {
+		this.code = code;
+		this.sub  = sub;
+	}
+	this(string s) {
+		string codeCh, subCh;
+		if(s.startsWith("MSTAR")) {
+			codeCh = "MSTAR";
+			subCh  = s[5..$];
+		} else {
+			codeCh = s[0..1];
+		 	subCh  = s[1..$];
+		}
+		this(codeCh.toCode(), subCh.toSub());
+	}
+	string toString() { return "%s%s".format(code, sub); }
+}
 
 enum Code {
 	none,
@@ -34,11 +53,11 @@ Code toCode(string ch) {
         auto s = "%s".format(e);
 		if(s == ch) return e;
 	}
-	return Code.none;
+	assert(false, "code not found %s".format(ch));
 }
 bool isReg(Code c) {
 	switch(c) with(Code) {
-		case B: case C: case D: case G: case H: case N: case P: case R: case S: case U: case V: return true;
+		case B: case C: case D: case G: case H: case L: case N: case P: case R: case S: case U: case V: return true;
 		default: return false;
 	}
 }
@@ -56,9 +75,6 @@ uint getSize(Code c, Parser p) {
 		case E:
 		case M:
 			return p.instr.getOperandSize();
-		case L:
-			todo();
-			break;
 		case N:
 		case P:
 		case Q:
@@ -70,6 +86,7 @@ uint getSize(Code c, Parser p) {
 		case V:
 		case W:
 		case MSTAR:
+		case L:
 			return p.avxL() ? 256 : 128;
 
 		default: assert(false, "implement me %s".format(c));

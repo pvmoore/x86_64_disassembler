@@ -103,22 +103,22 @@ __gshared Instruction[] INSTRUCTIONS = [
     Instruction("nop", null, IS.STD),           /* 4E - not available in 64bit mode - will be read as prefix byte */
     Instruction("nop", null, IS.STD),           /* 4F - not available in 64bit mode - will be read as prefix byte */
 
-    Instruction("push", ps_rAX, IS.STD, Hint.SIZE_64),  /* 50 */
-    Instruction("push", ps_rCX, IS.STD, Hint.SIZE_64),  /* 51 */
-    Instruction("push", ps_rDX, IS.STD, Hint.SIZE_64),  /* 52 */
-    Instruction("push", ps_rBX, IS.STD, Hint.SIZE_64),  /* 53 */
-    Instruction("push", ps_rSP, IS.STD, Hint.SIZE_64),  /* 54 */
-    Instruction("push", ps_rBP, IS.STD, Hint.SIZE_64),  /* 55 */
-    Instruction("push", ps_rSI, IS.STD, Hint.SIZE_64),  /* 56 */
-    Instruction("push", ps_rDI, IS.STD, Hint.SIZE_64),  /* 57 */
-    Instruction("pop", ps_rAX, IS.STD, Hint.SIZE_64),   /* 58 */
-    Instruction("pop", ps_rCX, IS.STD, Hint.SIZE_64),   /* 59 */
-    Instruction("pop", ps_rDX, IS.STD, Hint.SIZE_64),   /* 5A */
-    Instruction("pop", ps_rBX, IS.STD, Hint.SIZE_64),   /* 5B */
-    Instruction("pop", ps_rSP, IS.STD, Hint.SIZE_64),   /* 5C */
-    Instruction("pop", ps_rBP, IS.STD, Hint.SIZE_64),   /* 5D */
-    Instruction("pop", ps_rSI, IS.STD, Hint.SIZE_64),   /* 5E */
-    Instruction("pop", ps_rDI, IS.STD, Hint.SIZE_64),   /* 5F */
+    Instruction("push", ps_rAX, IS.STD, [Hint.SIZE_64]),  /* 50 */
+    Instruction("push", ps_rCX, IS.STD, [Hint.SIZE_64]),  /* 51 */
+    Instruction("push", ps_rDX, IS.STD, [Hint.SIZE_64]),  /* 52 */
+    Instruction("push", ps_rBX, IS.STD, [Hint.SIZE_64]),  /* 53 */
+    Instruction("push", ps_rSP, IS.STD, [Hint.SIZE_64]),  /* 54 */
+    Instruction("push", ps_rBP, IS.STD, [Hint.SIZE_64]),  /* 55 */
+    Instruction("push", ps_rSI, IS.STD, [Hint.SIZE_64]),  /* 56 */
+    Instruction("push", ps_rDI, IS.STD, [Hint.SIZE_64]),  /* 57 */
+    Instruction("pop", ps_rAX, IS.STD, [Hint.SIZE_64]),   /* 58 */
+    Instruction("pop", ps_rCX, IS.STD, [Hint.SIZE_64]),   /* 59 */
+    Instruction("pop", ps_rDX, IS.STD, [Hint.SIZE_64]),   /* 5A */
+    Instruction("pop", ps_rBX, IS.STD, [Hint.SIZE_64]),   /* 5B */
+    Instruction("pop", ps_rSP, IS.STD, [Hint.SIZE_64]),   /* 5C */
+    Instruction("pop", ps_rBP, IS.STD, [Hint.SIZE_64]),   /* 5D */
+    Instruction("pop", ps_rSI, IS.STD, [Hint.SIZE_64]),   /* 5E */
+    Instruction("pop", ps_rDI, IS.STD, [Hint.SIZE_64]),   /* 5F */
 
     Instruction("", null, IS.STD),                      /* 60 - not valid in 64bit mode */
     Instruction("", null, IS.STD),                      /* 61 - not valid in 64bit mode */
@@ -128,7 +128,7 @@ __gshared Instruction[] INSTRUCTIONS = [
     Instruction("", null, IS.STD),                      /* 65 - GS prefix */
     Instruction("", null, IS.STD),                      /* 66 - opsize prefix */
     Instruction("", null, IS.STD),                      /* 67 - addrsize prefix */
-    Instruction("push", ps_Iz, IS.STD, Hint.SIZE_64),   /* 68 */
+    Instruction("push", ps_Iz, IS.STD, [Hint.SIZE_64]), /* 68 */
     Instruction("imul", ps_GvEvIz, IS.STD),             /* 69 */
     Instruction("push", ps_Ib, IS.STD),                 /* 6A */
     Instruction("imul", ps_GvEvIb, IS.STD),             /* 6B */
@@ -186,8 +186,8 @@ __gshared Instruction[] INSTRUCTIONS = [
     Instruction("cqo", ps_none, IS.STD),                /* 99 */
     Instruction("", null, IS.STD),                      /* 9A - invalid in 64 bit mode */
     Instruction("wait", ps_none, IS.STD),               /* 9B */
-    Instruction("pushf", ps_Fv, IS.STD, Hint.SIZE_64),  /* 9C */
-    Instruction("popf", ps_Fv, IS.STD, Hint.SIZE_64),   /* 9D */
+    Instruction("pushf", ps_Fv, IS.STD, [Hint.SIZE_64]),/* 9C */
+    Instruction("popf", ps_Fv, IS.STD, [Hint.SIZE_64]), /* 9D */
     Instruction("sahf", ps_none, IS.STD),               /* 9E */
     Instruction("lahf", ps_none, IS.STD),               /* 9F */
 
@@ -195,17 +195,17 @@ __gshared Instruction[] INSTRUCTIONS = [
     Instruction("mov", ps_rAXOv, IS.STD),               /* A1 */
     Instruction("mov", ps_OvAL, IS.STD),                /* A2 */
     Instruction("mov", ps_OvrAX, IS.STD),               /* A3 */
-    Instruction("movs", ps_b, IS.STD, Hint.SIZE_8),     /* A4 */
+    Instruction("movs", ps_b, IS.STD, [Hint.SIZE_8]),   /* A4 */
     Instruction("movs", ps_v, IS.STD),                  /* A5 */
-    Instruction("cmps", ps_b, IS.STD, Hint.SIZE_8),     /* A6 */
+    Instruction("cmps", ps_b, IS.STD, [Hint.SIZE_8]),   /* A6 */
     Instruction("cmps", ps_v, IS.STD),                  /* A7 */
     Instruction("test", ps_ALIb, IS.STD),               /* A8 */
     Instruction("test", ps_rAXIz, IS.STD),              /* A9 */
-    Instruction("stob", ps_b, IS.STD, Hint.SIZE_8),     /* AA */
+    Instruction("stob", ps_b, IS.STD, [Hint.SIZE_8]),   /* AA */
     Instruction("stos", ps_v, IS.STD),                  /* AB */
-    Instruction("lods", ps_b, IS.STD, Hint.SIZE_8),     /* AC */
+    Instruction("lods", ps_b, IS.STD, [Hint.SIZE_8]),   /* AC */
     Instruction("lods", ps_v, IS.STD),                  /* AD */
-    Instruction("scas", ps_b, IS.STD, Hint.SIZE_8),     /* AE */
+    Instruction("scas", ps_b, IS.STD, [Hint.SIZE_8]),   /* AE */
     Instruction("scas", ps_v, IS.STD),                  /* AF */
 
     Instruction("mov", ps_ALIb, IS.STD),        /* B0 */

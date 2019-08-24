@@ -3,19 +3,33 @@ module disassembler.enums;
 import disassembler.all;
 
 enum Hint : uint {
-    NONE = 0,    // No hint
-    SIZE_8,      // Use 8 bit
-    SIZE_16,     // Use 16 bit
-    SIZE_32,     // Use 32 bit
-    SIZE_64,     // Use 64 bit
-    PTR_SIZE_W,  // Ptr size is 128/256 bit
+    NONE = 0,           // No hint
+    SIZE_8,             // Use 8 bit
+    SIZE_16,            // Use 16 bit
+    SIZE_32,            // Use 32 bit
+    SIZE_64,            // Use 64 bit
+    PTR_SIZE_32,        // Ptr size is dword
+    PTR_SIZE_128,       // Ptr size is xmmword
+    PTR_SIZE_256,       // Ptr size is ymmword
+    PTR_SIZE_L256_128,  // Ptr size is 256 if L=1 otherwise 128
+    PTR_SIZE_L128_64,   // Ptr size is 128 if L=1 otherwise 64
 }
 bool hasHint(inout Hint[] hints, Hint h) {
     foreach(hint; hints) if(h==hint) return true;
     return false;
 }
 Hint getPtrSizeHint(inout Hint[] hints) {
-    foreach(hint; hints) if(hint==Hint.PTR_SIZE_W) return hint;
+    foreach(hint; hints) with(Hint) {
+        switch(hint) {
+            case PTR_SIZE_32:
+            case PTR_SIZE_128:
+            case PTR_SIZE_256:
+            case PTR_SIZE_L256_128:
+            case PTR_SIZE_L128_64:
+                return hint;
+            default: break;
+        }
+    }
     return Hint.NONE;
 }
 

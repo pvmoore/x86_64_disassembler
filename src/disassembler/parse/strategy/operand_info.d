@@ -36,28 +36,28 @@ Reg getReg(Parser p, uint index, CodeAndSub code = CodeAndSub(Code.none, Sub.non
 	return r;
 }
 
-uint getPtrSize(Parser p, CodeAndSub c1, CodeAndSub c2) {
+uint getPtrSize(Parser p, CodeAndSub dest, CodeAndSub src) {
 	uint size;
 
-	if(c1.sub == c2.sub) {
-		return c1.sub.getRegSize(p);
+	//chat("dest = %s src = %s", dest, src);
+
+	if(src.sub == dest.sub) {
+		return src.sub.getRegSize(p);
 	}
 
-	/* Get the size from the mem side */
-	if(!c1.code.isReg()) {
-		size = c1.sub.getMemSize(p);
-	}
-	if(!c2.code.isReg()) {
-		size = c2.sub.getMemSize(p);
-	}
+	// if(dest.code.isReg()) {
+	// 	size = dest.sub.getRegSize(p);
+	// } else {
+		size = src.sub.getMemSize(p);
+	//}
 
 	if(size==0) {
 		/* Get the size from the reg side */
-		if(c1.code.isReg()) {
-			size = c1.sub.getRegSize(p);
+		if(src.code.isReg()) {
+			size = src.sub.getRegSize(p);
 		}
-		if(c2.code.isReg()) {
-			size = c2.sub.getRegSize(p);
+		if(dest.code.isReg()) {
+			size = dest.sub.getRegSize(p);
 		}
 	}
 
@@ -90,9 +90,6 @@ immutable(Reg*) getRegs(Parser p, Code code, Sub sub) {
 			return _getRegs(code.getSize(p));
 		case H:
 			return _getRegs(code.getSize(p));
-		case L:
-			todo();
-			break;
 		case N:
 		case P:
 			return RegMMX.ptr;
@@ -100,7 +97,7 @@ immutable(Reg*) getRegs(Parser p, Code code, Sub sub) {
 			return RegSeg.ptr;
 		case U:
 		case V:
-
+		case L:
 			return _getRegs(code.getSize(p));
 
 		/* mem only */

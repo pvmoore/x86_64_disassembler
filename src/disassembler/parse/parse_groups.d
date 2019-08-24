@@ -14,7 +14,7 @@ void group1(Parser p, uint byte1) {
 }
 void group1a(Parser p) {
     auto modrm = ModRM(p.peekByte());
-    if(modrm.reg==0) p.instr.copy(Instruction("pop", ps_Ev, IS.STD, Hint.SIZE_64));
+    if(modrm.reg==0) p.instr.copy(Instruction("pop", ps_Ev, IS.STD, [Hint.SIZE_64]));
     else if(modrm.reg==1) {
         // XOP
     }
@@ -368,14 +368,14 @@ __gshared Instruction[] INSTRUCTIONS_F7 = [
 ];
 /* group 5 */
 __gshared Instruction[] INSTRUCTIONS_FF = [
-    Instruction("inc", ps_Ev, IS.STD),                  /* 0xFF reg=0 */
-    Instruction("dec",  ps_Ev, IS.STD),                 /* 0xFF reg=1 */
-    Instruction("call", ps_Ev, IS.STD, Hint.SIZE_64),   /* 0xFF reg=2 */
-    Instruction("call", ps_Mp, IS.STD),                 /* 0xFF reg=3 */
-    Instruction("jmp", ps_Ev, IS.STD, Hint.SIZE_64),    /* 0xFF reg=4 */
-    Instruction("jmp", ps_Mp, IS.STD),                  /* 0xFF reg=5 */
-    Instruction("push", ps_Ev, IS.STD, Hint.SIZE_64),   /* 0xFF reg=6 */
-    Instruction("nop", null, IS.STD),                   /* 0xFF reg=7 */
+    Instruction("inc", ps_Ev, IS.STD),                      /* 0xFF reg=0 */
+    Instruction("dec",  ps_Ev, IS.STD),                     /* 0xFF reg=1 */
+    Instruction("call", ps_Ev, IS.STD, [Hint.SIZE_64]),     /* 0xFF reg=2 */
+    Instruction("call", ps_Mp, IS.STD),                     /* 0xFF reg=3 */
+    Instruction("jmp", ps_Ev, IS.STD, [Hint.SIZE_64]),      /* 0xFF reg=4 */
+    Instruction("jmp", ps_Mp, IS.STD),                      /* 0xFF reg=5 */
+    Instruction("push", ps_Ev, IS.STD, [Hint.SIZE_64]),     /* 0xFF reg=6 */
+    Instruction("nop", null, IS.STD),                       /* 0xFF reg=7 */
 ];
 /* group 6 */
 __gshared Instruction[] INSTRUCTIONS_0F_00_grp6 = [

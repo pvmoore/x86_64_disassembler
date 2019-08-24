@@ -39,8 +39,16 @@ public:
         /* Set the ptr size if this instruction has a ptr size that is not easy to determine */
         auto ptrSizeHint = instr.hints.getPtrSizeHint();
         if(ptrSizeHint!=Hint.NONE) {
-            // assume the hint is PTR_SIZE_W
-            uint size = instr.avx.L ? 256 : 128;
+            chat("hint = %s", ptrSizeHint);
+            uint size;
+            switch(ptrSizeHint) with(Hint) {
+                case PTR_SIZE_32: size = 32; break;
+                case PTR_SIZE_128: size = 128; break;
+                case PTR_SIZE_256: size = 256; break;
+                case PTR_SIZE_L256_128: size = instr.avx.L ? 256 : 128; break;
+                case PTR_SIZE_L128_64: size = instr.avx.L ? 128 : 64; break;
+                default: assert(false);
+            }
             foreach(ref op; instr.ops) {
                 op.ptrSize = size;
             }
@@ -95,7 +103,7 @@ public:
         return instr.avx.X^1;
     }
     uint avxW() {
-        return instr.avx.X;
+        return instr.avx.W;
     }
     uint avxL() {
         return instr.avx.L;

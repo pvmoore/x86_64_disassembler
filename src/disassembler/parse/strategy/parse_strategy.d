@@ -393,8 +393,35 @@ final class Voq : ParseStrategy {
 	}
 }
 
+final class VPERMIL2XX : ParseStrategy {
+	ParseStrategy decorated;
+	this(const ParseStrategy decorated) { this.decorated = cast(ParseStrategy)decorated; }
+
+	void parse(Parser p) {
+		/* Handle the operands */
+		decorated.parse(p);
+
+		/* Read the Ib */
+		// auto Ib = p.readByte();
+
+		// string perm;
+		// switch(Ib) {
+		// 	case 0: perm = "td"; break;
+		// 	case 1: perm = "td"; break;
+		// 	case 2: perm = "mo"; break;
+		// 	case 3: perm = "mz"; break;
+		// 	default: break;
+		// }
+
+		// todo - do something with _perm_ information
+
+		//p.instr.addOperand(new ImmOperand(Ib, 8));
+
+		//p.instr.immediate = Immediate(Ib, 8);
+	}
+}
+
 final class VCMPccXX : ParseStrategy {
-	// VCMPccXX Strategy
 	ParseStrategy vhw;
 	this(const ParseStrategy vhw) { this.vhw = cast(ParseStrategy)vhw; }
 
@@ -454,85 +481,84 @@ final class VCMPccXX : ParseStrategy {
 
 
 public final class ModRMSIB : ParseStrategy {
-	CodeAndSub[2] codes;
-	CodeAndSub code3;	// avx third operand specified by vvvv
-	uint op3Index;		// index of third operand (0,1 or 2 = left, middle or right)
+	CodeAndSub[] codes;
+	CodeAndSub codeH;	// avx third operand specified by vvvv
+	CodeAndSub codeL;	// avx fourth operand (Code.L) specified by an immediate value
+	uint opHIndex;		// index of third operand (0,1 or 2 = left, middle or right)
+	uint opLIndex;		// index of L operand (0,1,2,3 or 4)
 	bool swap;			// true if the reg op is the src otherwise reg is the dest
 
 	private this(Code dest, Sub destSub, Code src, Sub srcSub, bool swap) {
 		this.codes = [CodeAndSub(dest, destSub), CodeAndSub(src, srcSub)];
-		this.code3 = CodeAndSub(Code.none, Sub.none);
+		this.codeH = CodeAndSub(Code.none, Sub.none);
 		this.swap  = swap;
 	}
-	private this(CodeAndSub[2] codes, CodeAndSub code3, uint op3Index, bool swap) {
+	private this(CodeAndSub[] codes, CodeAndSub codeH, uint opHIndex, bool swap) {
 		this.codes 	  = codes;
-		this.code3 	  = code3;
-		this.op3Index = op3Index;
+		this.codeH 	  = codeH;
+		this.opHIndex = opHIndex;
 		this.swap  	  = swap;
 	}
+
+	// #################################################################################
+	// todo - refactor to string array form
 	static ModRMSIB reg_regmem(Code dest, Sub destSub, Code src, Sub srcSub) {
 		return new ModRMSIB(dest, destSub, src, srcSub, false);
 	}
 	static ModRMSIB regmem_reg(Code dest, Sub destSub, Code src, Sub srcSub) {
 		return new ModRMSIB(dest, destSub, src, srcSub, true);
 	}
-	static ModRMSIB avx(string a, string b) {
-		auto a2 = convert(a);
-		auto b2 = convert(b);
-		auto swap = !a2.code.isReg;
-		if(swap) {
-			return new ModRMSIB(b2.code, b2.sub, a2.code, a2.sub, true);
+	// #################################################################################
+
+	private this() {}
+
+	static ModRMSIB avx(string[] strings...) {
+
+		auto instance = new ModRMSIB;
+
+		foreach(i, str; strings) {
+			auto cas = CodeAndSub(str);
+			if(cas.code.isVVVV()) {
+				instance.setH(cas, i.as!uint);
+			} else if(cas.code==Code.L) {
+				instance.setL(cas, i.as!uint);
+			} else {
+				instance.addOp(cas);
+			}
 		}
-		return new ModRMSIB(a2.code, a2.sub, b2.code, b2.sub, false);
+		assert(instance.codes.length==2, "%s".format(strings));
+		if(strings.length>2) assert(instance.codeH.code != Code.none);
+		if(strings.length>3) assert(instance.codeL.code != Code.none);
+
+		return instance;
 	}
-	static ModRMSIB avx(string a, string b, string c) {
-		auto a2 = convert(a);
-		auto b2 = convert(b);
-		auto c2 = convert(c);
 
-		CodeAndSub code1, code2, code3;
-		uint op3Index;
+	void addOp(CodeAndSub cas) {
+		if(this.codes.length==1) {
+			this.swap = !this.codes[0].code.isReg();
 
-		if(a2.code.isVVVV()) {
-			op3Index = 0;
-			code3 	 = a2;
-			code1 	 = b2;
-			code2 	 = c2;
-		} else if(b2.code.isVVVV()) {
-			op3Index = 1;
-			code1 	 = a2;
-			code3 	 = b2;
-			code2 	 = c2;
-		} else {
-			op3Index = 2;
-			code1 	 = a2;
-			code2 	 = b2;
-			code3 	 = c2;
+			if(this.swap) {
+				/* Swap the operands*/
+				auto temp = this.codes[0];
+				this.codes[0] = cas;
+				cas = temp;
+			}
 		}
-
-		auto swap = !code1.code.isReg;
-		if(swap) {
-			return new ModRMSIB([code2, code1], code3, op3Index, true);
-		}
-		return new ModRMSIB([code1, code2], code3, op3Index, false);
+		this.codes ~= cas;
 	}
-	static auto convert(string s) {
-		string codeCh;
-		string subCh;
-		if(s.startsWith("MSTAR")) {
-			codeCh = "MSTAR";
-			subCh  = s[5..$];
-		} else {
-			codeCh = s[0..1];
-		 	subCh  = s[1..$];
-		}
-		return CodeAndSub(codeCh.toCode(), subCh.toSub());
+	void setH(CodeAndSub code, uint index) {
+		this.codeH    = code;
+		this.opHIndex = index;
+	}
+	void setL(CodeAndSub code, uint index) {
+		this.codeL    = code;
+		this.opLIndex = index;
 	}
 	void parse(Parser p) {
 
 		Operand op1, op2;
 
-		//chat("%s --->", p.instr.mnemonic);
+		//chat("%s ---> %s %s %s", p.instr.mnemonic, codes, codeH, codeL);
 		//chat("codes=%s swap=%s avx=%s rex=%s", codes, swap, p.instr.avx, p.prefix.rexBits);
 
 		parseModrmSib(p, &op2, &op1, codes[1], codes[0]);
@@ -541,6 +567,8 @@ public final class ModRMSIB : ParseStrategy {
 
 		op2.ptrSize = getPtrSize(p, codes[0], codes[1]);
 
+		//chat("ptrSize = %s", op2.ptrSize);
+
 		if(swap) {
 			p.instr.addOperand(op2);
 			p.instr.addOperand(op1);
@@ -549,23 +577,56 @@ public final class ModRMSIB : ParseStrategy {
 			p.instr.addOperand(op2);
 		}
 
-		/* Handle operand 3 if we have one */
-		if(code3.code!=Code.none) {
-			Operand op3;
-			uint vvvvSize = code3.code.getSize(p);
+		auto _handleH() {
+			/* Handle operand 3 */
+			Operand op;
+			uint vvvvSize = codeH.code.getSize(p);
 
-			if(code3.code==Code.B) {
+			if(codeH.code==Code.B) {
 				/* GP reg */
 				auto reg = Reg64[15-p.instr.avx.vvvv];
-				op3 = new RegOperand(reg);
+				op = new RegOperand(reg);
 			} else {
 				/* XMM/YMM reg */
 				auto regs = vvvvSize==128 ? RegXMM : RegYMM;
 				auto reg = regs[15-p.instr.avx.vvvv];
-				op3 = new RegOperand(reg);
+				op = new RegOperand(reg);
+			}
+			return op;
+		}
+		auto _handleL() {
+			/* Handle operand 4 */
+			uint index = p.readByte() >>> 4;
+			auto regs  = getRegs(p, codeL.code, codeL.sub);
+			auto reg   = regs[index];
+			return new RegOperand(reg);
+		}
+
+		Operand opH, opL;
+
+		if(codeH.code!=Code.none) {
+			opH = _handleH();
+		}
+		if(codeL.code!=Code.none) {
+			opL = _handleL();
+		}
+
+		if(opL && opH) {
+
+			if(opLIndex < opHIndex) {
+				/* swap them round - not sure why this is necessary?? */
+				auto temp = opLIndex;
+				opLIndex = opHIndex;
+				opHIndex = temp;
 			}
 
-			p.instr.insertOperandAt(op3Index, op3);
+			p.instr.insertOperandAt(opHIndex, opH);
+			p.instr.insertOperandAt(opLIndex, opL);
+
+		} else if(opH) {
+			p.instr.insertOperandAt(opHIndex, opH);
+		} else if(opL) {
+			p.instr.insertOperandAt(opLIndex, opL);
 		}
 	}
 }

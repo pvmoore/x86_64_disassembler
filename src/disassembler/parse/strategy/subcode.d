@@ -40,6 +40,9 @@ enum Sub {
 	pdwx,	// pdw - 128/256 bit depending on VEX.L
 	pdx,	// pd  - 128/256 bit depending on VEX.L
 	phx,	// ph  - 128/256 bit depending on VEX.L
+	pix,	// pi  - 128/256 bit depending on VEX.L
+	pkx,	// pk  - 128/256 bit depending on VEX.L
+	pqx,	// pq  - 128/256 bit depending on VEX.L
 	psx,	// ps  - 128/256 bit depending on VEX.L
     pjx,    // pj  - 128/256 bit depending on VEX.L
 	pqwx,	// pqw - 128/256 bit depending on VEX.L
@@ -52,7 +55,8 @@ Sub toSub(string ch) {
 		if(s == ch) return e;
 	}
 	if(ch=="do") return Sub.do_;
-	return Sub.none;
+
+	assert(false, "sub not found %s".format(ch));
 }
 uint getRegSize(Sub s, Parser p) {
 	switch(s) {
@@ -67,10 +71,14 @@ uint getRegSize(Sub s, Parser p) {
         case Sub.q:
         case Sub.o_q:
             return 64;
-		case Sub.o: return 128;
-        case Sub.do_: return 256;
+		case Sub.o:
+			return 128;
+        case Sub.do_:
+			return 256;
         case Sub.p: return p.prefix.opSize ? 32 : 48;
 		case Sub.pb:
+		case Sub.pdw:
+		case Sub.pqw:
 		case Sub.pw:
 		case Sub.pi:
         case Sub.ps:
@@ -80,10 +88,13 @@ uint getRegSize(Sub s, Parser p) {
 		case Sub.x:
 		case Sub.pbx:
 		case Sub.phx:
+		case Sub.pix:
+		case Sub.pkx:
 		case Sub.pwx:
 		case Sub.pdwx:
         case Sub.psx:
         case Sub.pdx:
+		case Sub.pqx:
 		case Sub.pjx:
 		case Sub.pqwx:
 		case Sub.o_qx:
@@ -110,12 +121,14 @@ uint getMemSize(Sub s, Parser p) {
         case Sub.ss:
 		case Sub.ps:
 		case Sub.pi:
+		case Sub.pdw:
             return 32;
         case Sub.sd:
         case Sub.q:
         case Sub.o_q:
 		case Sub.pd:
 		case Sub.pq:
+		case Sub.pqw:
             return 64;
 		case Sub.o:
 			return 128;
@@ -128,6 +141,9 @@ uint getMemSize(Sub s, Parser p) {
 		case Sub.psx:
 		case Sub.pbx:
 		case Sub.pdx:
+		case Sub.pkx:
+		case Sub.pix:
+		case Sub.pqx:
 		case Sub.o_qx:
 		case Sub.pqwx:
 		case Sub.pdwx:

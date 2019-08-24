@@ -41,7 +41,7 @@ public:
     this(string mnemonic,
         inout ParseStrategy parseStrategy,
         IS instructionSet,
-        Hint[] hints...)
+        Hint[] hints = null)
     {
         this.mnemonic       = mnemonic;
         this.parseStrategy  = cast(ParseStrategy)parseStrategy;
@@ -124,8 +124,15 @@ public:
                                            ops[1].getFormatted(fmt),
                                            ops[2].getFormatted(fmt),
                                            ops[3].getFormatted(fmt));
+        } else if(ops.length==5) {
+            return "%s, %s, %s, %s, %s".format(ops[0].getFormatted(fmt),
+                                               ops[1].getFormatted(fmt),
+                                               ops[2].getFormatted(fmt),
+                                               ops[3].getFormatted(fmt),
+                                               ops[4].getFormatted(fmt));
         }
-        assert(false, "handle ops.length>4");
+
+        assert(false, "handle ops.length>5");
     }
     string getMnemonicAndOperandsString(Operand.Fmt fmt) {
         auto ms = getMnemonicString();
