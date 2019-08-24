@@ -33,43 +33,6 @@ Hint getPtrSizeHint(inout Hint[] hints) {
     return Hint.NONE;
 }
 
-// https://en.wikipedia.org/wiki/X86_instruction_listings
-enum IS : uint {
-    /* x86_64 Standard Instructions */
-    STD = 0,
-
-    MMX,
-    SSE,
-    SSE2,
-    /* Instruction sets after x86_64/SSE2 */
-    SSE3,       // (Prescott)
-    SSSE3,      // (Sandy Bridge)
-
-    SSE4_1,     // (Penryn)
-    SSE4_2,     // (Nehalem)
-
-    AVX,        // (Sandy Bridge)
-    AVX2,       // (Haswell)
-    AVX_512,    // Knights Landing, Skylake-X, Cannon Lake
-
-    FMA3,       // (Haswell, Piledriver)        https://en.wikipedia.org/wiki/FMA_instruction_set
-    FMA4,       // AMD only. Removed
-    XOP,        // AMD only. Removed with Zen
-
-    F16C,       // CVT16 Half precision float conversions (Ivy Bridge)  https://en.wikipedia.org/wiki/F16C
-    AES,        // Advanced Encryption Standard (Westmere)    https://en.wikipedia.org/wiki/AES_instruction_set
-    CLMUL,      // Carry-less Multiplication (Westmere)
-    SHA,        // Secure Hash Algorithm (Goldmont, Zen) https://en.wikipedia.org/wiki/Intel_SHA_extensions
-    TXT,        // Trusted Execution Technology
-    TSX,        // Transactional Synchronization Extensions (Broadwell)
-    SGX,        // Software Guard Extensions
-    RDRAND,     // Random number generator (Ivy Bridge) https://en.wikipedia.org/wiki/RdRand
-
-    AMD_V,      // AMD Virtualization
-    VT_x,       // Intel Virtualization
-    VT_d,       // ?
-}
-
 enum Reg {
     NONE = 0,
 

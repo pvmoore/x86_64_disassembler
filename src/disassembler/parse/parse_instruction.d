@@ -123,7 +123,7 @@ void multibyteNop(Parser p) {
             break;
     }
 
-    auto instr = Instruction("nop (%s bytes)".format(num), ps_none, IS.STD);
+    auto instr = Instruction("nop (%s bytes)".format(num), ps_none);
     p.instr.copy(instr);
 }
 

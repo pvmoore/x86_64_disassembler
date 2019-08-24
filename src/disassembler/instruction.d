@@ -16,7 +16,6 @@ public:
     /* Copied state */
     ParseStrategy parseStrategy;
     string mnemonic;
-    IS instructionSet;
     Hint[] hints;
     /* end of copied state */
 
@@ -40,12 +39,10 @@ public:
 
     this(string mnemonic,
         inout ParseStrategy parseStrategy,
-        IS instructionSet,
         Hint[] hints = null)
     {
         this.mnemonic       = mnemonic;
         this.parseStrategy  = cast(ParseStrategy)parseStrategy;
-        this.instructionSet = instructionSet;
         this.hints          = hints;
     }
 
@@ -54,7 +51,6 @@ public:
         this.mnemonic       = other.mnemonic;
         this.parseStrategy  = cast(ParseStrategy)other.parseStrategy;
         this.hints          = cast(Hint[])other.hints;
-        this.instructionSet = other.instructionSet;
 	}
 
     void addOperand(Operand op) {
@@ -153,10 +149,6 @@ public:
                     avx.L ? "L" : "."
                 );
             }
-        }
-        if(instructionSet!=IS.STD) {
-            if(comment.length==0) comment ~= "; "; else comment ~= " ";
-            comment ~= "%s".format(instructionSet);
         }
         return comment;
     }
