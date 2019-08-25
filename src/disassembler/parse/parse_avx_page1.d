@@ -159,9 +159,9 @@ void parseAVXPage1(Parser p, ref AVX avx) {
                     break;
                 case _1:
                     switch(lo) {
-                        case _01: avxGroup12(p, avx); break;
-                        case _02: avxGroup13(p, avx); break;
-                        case _03: avxGroup14(p, avx); break;
+                        case _01: avxGroup12(p, avx, modrm); break;
+                        case _02: avxGroup13(p, avx, modrm); break;
+                        case _03: avxGroup14(p, avx, modrm); break;
                         case _0E:
                             if(avx.W) {
                                 p.instr.copy(Instruction("movq", ps_EyVo));
@@ -194,7 +194,7 @@ void parseAVXPage1(Parser p, ref AVX avx) {
         case _09: /* Nothing here */
             break;
         case _0A:
-            if(lo==_0E) avxGroup15(p, avx);
+            if(lo==_0E) avxGroup15(p, avx, modrm);
             break;
         case _0B: /* Nothing here */
             break;

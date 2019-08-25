@@ -232,6 +232,8 @@ ParseStrategy ps_WoVo   	= ModRMSIB.regmem_reg(Code.V, Sub.o, Code.W, Sub.o);
 
 
 /* AVX */
+const ParseStrategy ps_ByEy             = ModRMSIB.avx("By", "Ey");
+
 const ParseStrategy ps_EyVo             = ModRMSIB.avx("Ey", "Vo");
 const ParseStrategy ps_EqVpqw           = ModRMSIB.avx("Eq", "Vpqw");
 const ParseStrategy ps_EqVpqwIb         = new Composite(ps_EqVpqw, ps_Ib);
@@ -247,6 +249,15 @@ const ParseStrategy ps_GyByEy           = ModRMSIB.avx("Gy", "By", "Ey");
 const ParseStrategy ps_GyEyBy           = ModRMSIB.avx("Gy", "Ey", "By");
 const ParseStrategy ps_GyEy             = ModRMSIB.avx("Gy", "Ey");
 const ParseStrategy ps_GyEyIb           = new Composite(ps_GyEy, ps_Ib);
+
+const ParseStrategy ps_HpwxUpwx         = ModRMSIB.avx("Hpwx", "Upwx");
+const ParseStrategy ps_HpwxUpwxIb       = new Composite(ps_HpwxUpwx, ps_Ib);
+const ParseStrategy ps_HpdwxUpdwx       = ModRMSIB.avx("Hpdwx", "Updwx");
+const ParseStrategy ps_HpdwxUpdwxIb     = new Composite(ps_HpdwxUpdwx, ps_Ib);
+const ParseStrategy ps_HpqwxUpqwx       = ModRMSIB.avx("Hpqwx", "Upqwx");
+const ParseStrategy ps_HpqwxUpqwxIb     = new Composite(ps_HpqwxUpqwx, ps_Ib);
+const ParseStrategy ps_HpbxUpbx         = ModRMSIB.avx("Hpbx", "Upbx");
+const ParseStrategy ps_HpbxUpbxIb       = new Composite(ps_HpbxUpbx, ps_Ib);
 
 const ParseStrategy ps_MqVo			    = ModRMSIB.avx("Mq", "Vo");
 const ParseStrategy ps_MqVpd		    = ModRMSIB.avx("Mq", "Vpd");
@@ -431,6 +442,8 @@ const ParseStrategy ps_VssLssWssHss     = ModRMSIB.avx("Vss", "Lss", "Wss", "Hss
 const ParseStrategy ps_VsdLsdWsdHsd     = ModRMSIB.avx("Vsd", "Lsd", "Wsd", "Hsd");
 const ParseStrategy ps_VssLssHssWss     = ModRMSIB.avx("Vss", "Lss", "Hss", "Wss");
 const ParseStrategy ps_VsdLsdHsdWsd     = ModRMSIB.avx("Vsd", "Lsd", "Hsd", "Wsd");
+
+
 
 
 

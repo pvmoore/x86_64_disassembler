@@ -125,7 +125,7 @@ void parseAVXPage2(Parser p, ref AVX avx) {
         case _0E: /* Nothing here */ break;
         case _0F:
             if(lo==_03) {
-                avxGroup17(p, avx);
+                avxGroup17(p, avx, modrm);
             } else {
                 final switch(avx.pp) with(AVX.PP) {
                     case _0:

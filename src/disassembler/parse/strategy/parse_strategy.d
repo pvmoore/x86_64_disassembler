@@ -526,7 +526,7 @@ public final class ModRMSIB : ParseStrategy {
 				instance.addOp(cas);
 			}
 		}
-		assert(instance.codes.length==2, "%s".format(strings));
+		//assert(instance.codes.length==2, "%s".format(strings));
 		if(strings.length>2) assert(instance.codeH.code != Code.none);
 		if(strings.length>3) assert(instance.codeL.code != Code.none);
 
@@ -561,20 +561,25 @@ public final class ModRMSIB : ParseStrategy {
 		//chat("%s ---> %s %s %s", p.instr.mnemonic, codes, codeH, codeL);
 		//chat("codes=%s swap=%s avx=%s rex=%s", codes, swap, p.instr.avx, p.prefix.rexBits);
 
-		parseModrmSib(p, &op2, &op1, codes[1], codes[0]);
+		if(codes.length==2) {
+			parseModrmSib(p, &op2, &op1, codes[1], codes[0]);
 
-		//chat("--- op1=%s", op1);
+			op2.ptrSize = getPtrSize(p, codes[0], codes[1]);
 
-		op2.ptrSize = getPtrSize(p, codes[0], codes[1]);
+			//chat("ptrSize = %s", op2.ptrSize);
 
-		//chat("ptrSize = %s", op2.ptrSize);
-
-		if(swap) {
-			p.instr.addOperand(op2);
-			p.instr.addOperand(op1);
+			if(swap) {
+				p.instr.addOperand(op2);
+				p.instr.addOperand(op1);
+			} else {
+				p.instr.addOperand(op1);
+				p.instr.addOperand(op2);
+			}
 		} else {
+			parseModrmSib(p, &op1, null, codes[0]);
+			op1.ptrSize = getPtrSize(p, codes[0], codes[0]);
+
 			p.instr.addOperand(op1);
-			p.instr.addOperand(op2);
 		}
 
 		auto _handleH() {
@@ -592,6 +597,7 @@ public final class ModRMSIB : ParseStrategy {
 				auto reg = regs[15-p.instr.avx.vvvv];
 				op = new RegOperand(reg);
 			}
+
 			return op;
 		}
 		auto _handleL() {
