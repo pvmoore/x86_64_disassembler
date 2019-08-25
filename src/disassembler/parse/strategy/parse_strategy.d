@@ -478,8 +478,6 @@ final class VCMPccXX : ParseStrategy {
 }
 
 
-
-
 public final class ModRMSIB : ParseStrategy {
 	CodeAndSub[] codes;
 	CodeAndSub codeH;	// avx third operand specified by vvvv
@@ -488,49 +486,21 @@ public final class ModRMSIB : ParseStrategy {
 	uint opLIndex;		// index of L operand (0,1,2,3 or 4)
 	bool swap;			// true if the reg op is the src otherwise reg is the dest
 
-	private this(Code dest, Sub destSub, Code src, Sub srcSub, bool swap) {
-		this.codes = [CodeAndSub(dest, destSub), CodeAndSub(src, srcSub)];
-		this.codeH = CodeAndSub(Code.none, Sub.none);
-		this.swap  = swap;
-	}
-	private this(CodeAndSub[] codes, CodeAndSub codeH, uint opHIndex, bool swap) {
-		this.codes 	  = codes;
-		this.codeH 	  = codeH;
-		this.opHIndex = opHIndex;
-		this.swap  	  = swap;
-	}
-
-	// #################################################################################
-	// todo - refactor to string array form
-	static ModRMSIB reg_regmem(Code dest, Sub destSub, Code src, Sub srcSub) {
-		return new ModRMSIB(dest, destSub, src, srcSub, false);
-	}
-	static ModRMSIB regmem_reg(Code dest, Sub destSub, Code src, Sub srcSub) {
-		return new ModRMSIB(dest, destSub, src, srcSub, true);
-	}
-	// #################################################################################
-
-	private this() {}
-
-	static ModRMSIB avx(string[] strings...) {
-
-		auto instance = new ModRMSIB;
+	this(string[] strings...) {
 
 		foreach(i, str; strings) {
 			auto cas = CodeAndSub(str);
 			if(cas.code.isVVVV()) {
-				instance.setH(cas, i.as!uint);
+				this.setH(cas, i.as!uint);
 			} else if(cas.code==Code.L) {
-				instance.setL(cas, i.as!uint);
+				this.setL(cas, i.as!uint);
 			} else {
-				instance.addOp(cas);
+				this.addOp(cas);
 			}
 		}
 		//assert(instance.codes.length==2, "%s".format(strings));
-		if(strings.length>2) assert(instance.codeH.code != Code.none);
-		if(strings.length>3) assert(instance.codeL.code != Code.none);
-
-		return instance;
+		if(strings.length>2) assert(this.codeH.code != Code.none);
+		if(strings.length>3) assert(this.codeL.code != Code.none);
 	}
 
 	void addOp(CodeAndSub cas) {

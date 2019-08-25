@@ -10,11 +10,7 @@ Currently disassembles most x64_64 instructions but needs a lot more testing. Ca
 
 ## Todo
 
-- [ ] AVX
 - [ ] FPU
-- [ ] FMA3
-- [ ] Add screenshot of HTML output
-- [ ] Add labels
 - [ ] Add imports
 
 ## Requirements
