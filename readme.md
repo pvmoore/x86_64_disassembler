@@ -1,4 +1,4 @@
-# X86_86 Disassembler
+# X86_64 Disassembler
 
 ## Screenshots
 
