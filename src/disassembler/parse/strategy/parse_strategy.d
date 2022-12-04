@@ -9,8 +9,14 @@ interface ParseStrategy {
 final class Composite : ParseStrategy {
 	private ParseStrategy[] strategies;
 
-	this(const ParseStrategy[] strategies ...) {
-		this.strategies = cast(ParseStrategy[])strategies;
+	this() {
+
+	}
+	this(const ParseStrategy s1, const ParseStrategy s2) {
+		this.strategies = cast(ParseStrategy[])[s1, s2];
+	}
+	this(const ParseStrategy s1, const ParseStrategy s2, const ParseStrategy s3) {
+		this.strategies = cast(ParseStrategy[])[s1, s2, s3];
 	}
 	void parse(Parser p) {
 		foreach(s; strategies) {

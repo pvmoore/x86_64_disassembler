@@ -67,9 +67,3 @@ bool isStringOpcode(string mnemonic) {
             return false;
     }
 }
-bool isOneOf(T)(T self, T[] list...) {
-    foreach(e; list) {
-        if(e==self) return true;
-    }
-    return false;
-}

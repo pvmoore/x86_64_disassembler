@@ -57,7 +57,7 @@ public:
         this.ops ~= op;
     }
     void insertOperandAt(uint index, Operand op) {
-        this.ops.insert(index, op);
+        this.ops.insertAt(index, op);
     }
 
     bool hasPrefix() const {
