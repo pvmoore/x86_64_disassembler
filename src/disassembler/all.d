@@ -9,6 +9,7 @@ import std.algorithm.iteration  : map;
 import std.typecons 			: Tuple, tuple;
 
 import common;
+import common.containers;
 import logging;
 import resources;
 
